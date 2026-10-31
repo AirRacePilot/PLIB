@@ -1,0 +1,83 @@
+{
+ "commands": [
+  {
+   "command": "sketch.create",
+   "params": {
+    "plane": "XZ"
+   }
+  },
+  {
+   "command": "sketch.line",
+   "params": {
+    "points": [
+     [
+      0,
+      30.0
+     ],
+     [
+      4.0,
+      30.0
+     ],
+     [
+      4.0,
+      0
+     ],
+     [
+      6.5,
+      0
+     ],
+     [
+      6.5,
+      -8.0
+     ],
+     [
+      0,
+      -8.0
+     ]
+    ],
+    "closed": true
+   }
+  },
+  {
+   "command": "sketch.finish",
+   "params": {}
+  },
+  {
+   "command": "solid.revolve",
+   "params": {
+    "axis": "y",
+    "operation": "new"
+   }
+  },
+  {
+   "command": "sketch.create",
+   "params": {
+    "plane": "XY",
+    "offset": "8.0 mm"
+   }
+  },
+  {
+   "command": "sketch.polygon.circumscribed",
+   "params": {
+    "center": [
+     0,
+     0
+    ],
+    "radius": 3.0,
+    "sides": 6
+   }
+  },
+  {
+   "command": "sketch.finish",
+   "params": {}
+  },
+  {
+   "command": "solid.extrude",
+   "params": {
+    "distance": "4.0 mm",
+    "direction": "negative",
+    "operation": "cut"
+   }
+  }
+ ]
+}

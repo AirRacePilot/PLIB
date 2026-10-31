@@ -1,0 +1,52 @@
+{
+ "commands": [
+  {
+   "command": "sketch.create",
+   "params": {
+    "plane": "XY",
+    "offset": "0.0 mm"
+   }
+  },
+  {
+   "command": "sketch.polygon.circumscribed",
+   "params": {
+    "center": [
+     0,
+     0
+    ],
+    "radius": 6.5,
+    "sides": 6
+   }
+  },
+  {
+   "command": "sketch.finish",
+   "params": {}
+  },
+  {
+   "command": "solid.extrude",
+   "params": {
+    "distance": "6.8 mm",
+    "direction": "positive",
+    "operation": "new"
+   }
+  },
+  {
+   "command": "solid.cylinder",
+   "params": {
+    "diameter": "8.0 mm",
+    "height": "8.8 mm",
+    "base": [
+     0,
+     0,
+     -1
+    ],
+    "axis": [
+     0,
+     0,
+     1
+    ],
+    "operation": "cut"
+   }
+  }
+ ]
+}

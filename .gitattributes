@@ -1,0 +1,9 @@
+* text=auto
+*.pas text eol=crlf
+*.lfm text eol=crlf
+*.lpi text eol=crlf
+*.lpr text eol=crlf
+*.dll binary
+*.sqlite3 binary
+*.par binary
+*.res binary

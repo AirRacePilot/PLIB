@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="12"/>
+    <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <MainUnitHasScaledStatement Value="False"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <Title Value="PLIB Teilebibliothek"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+      <Icon Value="0"/>
+    </General>
+    <BuildModes>
+      <Item Name="Default" Default="True"/>
+      <Item Name="Release">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="plib"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="2"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <StripSymbols Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+        </CompilerOptions>
+      </Item>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+    </RunParams>
+    <RequiredPackages>
+      <Item>
+        <PackageName Value="LCL"/>
+      </Item>
+      <Item>
+        <PackageName Value="FrameViewer09"/>
+      </Item>
+    </RequiredPackages>
+    <Units>
+      <Unit>
+        <Filename Value="plib.lpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="mainunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="MainUnit"/>
+      </Unit>
+      <Unit>
+        <Filename Value="dockunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="DockUnit"/>
+      </Unit>
+      <Unit>
+        <Filename Value="classsuggest.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ClassSuggest"/>
+      </Unit>
+      <Unit>
+        <Filename Value="pluginhost.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PluginHost"/>
+      </Unit>
+      <Unit>
+        <Filename Value="plibtheme.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PlibTheme"/>
+      </Unit>
+      <Unit>
+        <Filename Value="plibribbon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PlibRibbon"/>
+      </Unit>
+      <Unit>
+        <Filename Value="plibviews.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PlibViews"/>
+      </Unit>
+      <Unit>
+        <Filename Value="plibdpi.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PlibDpi"/>
+      </Unit>
+      <Unit>
+        <Filename Value="plibicons.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PlibIcons"/>
+      </Unit>
+      <Unit>
+        <Filename Value="plibwin.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PlibWin"/>
+      </Unit>
+      <Unit>
+        <Filename Value="plibutil.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PlibUtil"/>
+      </Unit>
+      <Unit>
+        <Filename Value="plibdialogs.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PlibDialogs"/>
+      </Unit>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="plib"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf3"/>
+      </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+</CONFIG>

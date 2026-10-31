@@ -1,0 +1,45 @@
+{
+ "commands": [
+  {
+   "command": "sketch.create",
+   "params": {
+    "plane": "XZ"
+   }
+  },
+  {
+   "command": "sketch.line",
+   "params": {
+    "points": [
+     [
+      4.2,
+      0
+     ],
+     [
+      8.0,
+      0
+     ],
+     [
+      8.0,
+      -1.6
+     ],
+     [
+      4.2,
+      -1.6
+     ]
+    ],
+    "closed": true
+   }
+  },
+  {
+   "command": "sketch.finish",
+   "params": {}
+  },
+  {
+   "command": "solid.revolve",
+   "params": {
+    "axis": "y",
+    "operation": "new"
+   }
+  }
+ ]
+}

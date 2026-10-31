@@ -1,0 +1,21 @@
+; Beispiel fuer plib.ini - PLIB legt die echte Datei beim ersten Start selbst an.
+; Diese Datei enthaelt keine persoenlichen Daten.
+
+[Datenbank]
+; sqlite (lokal, ein Benutzer) oder postgresql (Server, mehrere Benutzer)
+Typ=sqlite
+; PgServer=192.168.0.10
+; PgPort=5432
+; PgDatenbank=plib
+; PgBenutzer=plib_user
+
+[Ansicht]
+Design=0
+Menueband=1
+Hochaufloesend=1
+
+[Update]
+; Textdatei oder Internetadresse mit Version=, Download=, Hinweis= (siehe update_beispiel.txt);
+; leer = GitHub-Releases des Projekts (nur bei oeffentlichem Repository)
+Quelle=
+AutoPruefen=1

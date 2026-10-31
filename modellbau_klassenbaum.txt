@@ -1,0 +1,751 @@
+# PLIB Klassenbaum für den Modellbau
+# Aufbau der Datei (Trennzeichen |, Zeilen mit # sind Kommentare):
+#   U|Code|Name|Größenart|Faktor|Verschiebung         Einheit (Basiseinheit der Größenart hat Faktor 1)
+#   P|Code|Name|Typ|Einheit|Aufzählungswerte         Merkmal; Typ: string, integer, real, boolean, enum
+#                                                    Aufzählung: CODE=Name;CODE=Name
+#   D|Name|Code,Code,...                             benannte Merkmalsgruppe, in C-Zeilen als @Name nutzbar
+#   C|Ebene|Code|Name|Merkmale|Definition|Klassennummer  Klasse; Ebene 1 bis 4 (AA.BB.CC.DD);
+#                                                    Klassennummer optional, sonst automatisch
+#   S|Begriff|Klassencode|Gewichtung                 Suchbegriff für den Klassenvorschlag (Gewichtung 1-100, Standard 10)
+# Gibt es einen Code schon in der Datenbank, bleibt der vorhandene Eintrag unverändert.
+# Der Hersteller ist kein Merkmal mehr, sondern ein eigenes Feld am Teil.
+# Merkmale werden an alle Unterklassen vererbt.
+
+# ---------------- Einheiten ----------------
+U|mA|Milliampere|Strom|0.001|0
+U|mV|Millivolt|Spannung|0.001|0
+U|Wh|Wattstunde|Energie|3600|0
+U|Ah|Amperestunde|Ladung|3600|0
+U|mAh|Milliamperestunde|Ladung|3.6|0
+U|Hz|Hertz|Frequenz|1|0
+U|kHz|Kilohertz|Frequenz|1000|0
+U|MHz|Megahertz|Frequenz|1000000|0
+U|U/min|Umdrehungen pro Minute|Drehzahl|0.0166666666667|0
+U|Ω|Ohm|Widerstand|1|0
+U|kΩ|Kiloohm|Widerstand|1000|0
+U|MΩ|Megaohm|Widerstand|1000000|0
+U|µF|Mikrofarad|Kapazität|0.000001|0
+U|nF|Nanofarad|Kapazität|0.000000001|0
+U|pF|Pikofarad|Kapazität|0.000000000001|0
+U|Ncm|Newtonzentimeter|Drehmoment|0.01|0
+U|kgcm|Kilogrammzentimeter|Drehmoment|0.0980665|0
+U|N/mm|Newton pro Millimeter|Federrate|1000|0
+U|%|Prozent|Verhältnis|0.01|0
+U|EUR|Euro|Preis|1|0
+U|ml/min|Milliliter pro Minute|Volumenstrom|1|0
+U|rpm/V|Umdrehungen pro Minute und Volt|Drehzahlkonstante|1|0
+U|mm²|Quadratmillimeter|Fläche|0.000001|0
+
+# ---------------- Allgemeine Merkmale ----------------
+P|WERKSTOFF|Werkstoff|string||
+P|NORM|Norm|string||
+P|OBERFL|Oberfläche|enum||BLANK=blank;ZN=galvanisch verzinkt;BRUEN=schwarz brüniert;HDG=feuerverzinkt;ELOX=eloxiert;LACK=lackiert;VERNI=vernickelt;PULVER=pulverbeschichtet
+P|FARBE|Farbe|enum||SCHWARZ=schwarz;WEISS=weiß;ROT=rot;BLAU=blau;GRUEN=grün;GELB=gelb;ORANGE=orange;SILBER=silber;GRAU=grau;TRANSP=transparent;NATUR=natur
+P|ARTNR|Artikelnummer des Herstellers|string||
+P|BEZUG|Bezugsquelle|string||
+P|PREIS|Preis|real|EUR|
+P|MASSE|Masse|real|g|
+D|ALLG|ARTNR,BEZUG,PREIS,MASSE
+
+# ---------------- Abmessungen ----------------
+P|DN|Nenndurchmesser|real|mm|
+P|L|Länge|real|mm|
+P|B|Breite|real|mm|
+P|H|Höhe|real|mm|
+P|S|Dicke|real|mm|
+P|D1|Innendurchmesser|real|mm|
+P|D2|Außendurchmesser|real|mm|
+P|WANDST|Wandstärke|real|mm|
+P|SW|Schlüsselweite|real|mm|
+P|K|Kopfhöhe|real|mm|
+P|DK|Kopfdurchmesser|real|mm|
+P|SWI|Innensechskant (Schlüsselweite)|real|mm|
+P|M|Mutternhöhe|real|mm|
+P|FKL|Festigkeitsklasse|enum||8.8=Festigkeitsklasse 8.8;10.9=Festigkeitsklasse 10.9;12.9=Festigkeitsklasse 12.9;A2-70=Edelstahl A2-70;A4-70=Edelstahl A4-70;6=Mutter Klasse 6;8=Mutter Klasse 8;10=Mutter Klasse 10;4.8=Festigkeitsklasse 4.8
+P|GEW|Gewinde|string||
+P|BOHR1|Bohrung 1|real|mm|
+P|BOHR2|Bohrung 2|real|mm|
+
+# ---------------- Mechanik ----------------
+P|LAGERNR|Lagerbezeichnung|string||
+P|ZAEHNE|Zähnezahl|integer||
+P|MODUL|Modul|real|mm|
+P|TEILUNG|Teilung|real|mm|
+P|ZAHNPROFIL|Zahnprofil|enum||GT2=GT2;HTD3M=HTD 3M;T2.5=T2.5;MXL=MXL;XL=XL
+P|RIEMBR|Riemenbreite|real|mm|
+P|DRAHTD|Drahtdurchmesser|real|mm|
+P|FEDERRATE|Federrate|real|N/mm|
+P|BREITER|Reifenbreite|real|mm|
+
+# ---------------- Hydraulik ----------------
+P|DRUCKMAX|Maximaler Betriebsdruck|real|bar|
+P|KOLBD|Kolbendurchmesser|real|mm|
+P|STANGED|Kolbenstangendurchmesser|real|mm|
+P|HUB|Hub|real|mm|
+P|ANSCHL|Anschlussgewinde|string||
+P|FOERDER|Fördermenge|real|ml/min|
+P|INHALT|Inhalt|real|ml|
+
+# ---------------- Elektrik und Elektronik ----------------
+P|SPANNUNG|Nennspannung|real|V|
+P|SPANNMAX|Maximale Spannung|real|V|
+P|STROM|Nennstrom|real|A|
+P|STROMMAX|Maximaler Strom|real|A|
+P|LEISTUNG|Leistung|real|W|
+P|KAPAZ|Kapazität (Akku)|real|mAh|
+P|ZELLEN|Zellenzahl|integer||
+P|CRATE|Entladerate (C)|real||
+P|KV|Drehzahlkonstante|real|rpm/V|
+P|DREHZ|Drehzahl|real|U/min|
+P|DREHM|Drehmoment|real|Ncm|
+P|STELLZEIT|Stellzeit (je 60 Grad)|real|s|
+P|GETRMAT|Getriebematerial|enum||KUNSTST=Kunststoff;METALL=Metall;TITAN=Titan
+P|STECKER|Steckverbinder|enum||XT30=XT30;XT60=XT60;XT90=XT90;EC3=EC3;EC5=EC5;JSTXH=JST-XH;JSTPH=JST-PH;JSTRCY=JST-RCY;DUPONT=Dupont;DEANS=Deans (T-Stecker);BAN2=Bananenstecker 2 mm;BAN4=Bananenstecker 4 mm;SERVO=Servostecker (JR/Futaba);MICRO=Micro-USB;USBC=USB-C;DC55=Hohlstecker 5,5 mm
+P|PINS|Polzahl / Pins|integer||
+P|PROT|Schnittstelle|enum||PWM=PWM;I2C=I2C;SPI=SPI;UART=UART;CAN=CAN;USB=USB;ANALOG=analog;DIGITAL=digital;SBUS=S.Bus;CRSF=CRSF;PPM=PPM;ACCST=ACCST/ACCESS
+P|KANAL|Kanalzahl|integer||
+P|FREQ|Frequenz|real|MHz|
+P|WIDERSTAND|Widerstand|real|Ω|
+P|CAPA|Kapazität (Bauteil)|real|µF|
+P|TOLER|Toleranz|real|%|
+P|BAUFORM|Bauform|enum||THT=bedrahtet (THT);R0402=0402;R0603=0603;R0805=0805;R1206=1206;SOT23=SOT-23;SOIC8=SOIC-8;TO220=TO-220;TO92=TO-92;DIP=DIP;QFP=QFP;ANDERE=andere
+P|LEITERQ|Leiterquerschnitt|real|mm²|
+P|SCHUTZ|Schutzart (IP)|string||
+
+# ---------------- Material und Verbrauch ----------------
+P|ABBIND|Abbindezeit|real|min|
+P|FILAMENT|Druckmaterial|enum||PLA=PLA;PETG=PETG;ABS=ABS;ASA=ASA;TPU=TPU;PA12CF=PA12-CF;HARZ=Harz (Resin)
+P|FUELL|Fülldichte|real|%|
+P|SCHICHT|Schichthöhe|real|mm|
+
+# ---------------- Eigene Konstruktionen ----------------
+P|ZEICHNR|Zeichnungsnummer|string||
+P|REVISION|Revision|string||
+P|PROJEKT|Projekt / Modell|string||
+P|FERTIG|Fertigungsverfahren|enum||FRAESEN=Fräsen;DREHEN=Drehen;DRUCK3D=3D-Druck;LASER=Laserschneiden;BLECH=Blechbearbeitung;GUSS=Gießen;SAEGEN=Sägen / Feilen;HANDARB=Handarbeit;ZUKAUF=Zukauf
+
+# ====================================================================
+# KLASSENBAUM
+# ====================================================================
+
+# ---------------- 1 Normteile (Verbindungselemente) ----------------
+C|1|NT|Normteil|@ALLG,WERKSTOFF,NORM,OBERFL|Genormte Verbindungs- und Maschinenelemente|10.00.00.00
+C|2|SCHR|Schraube|DN,FKL,GEW|Schrauben aller Art|10.01.00.00
+C|3|SKS|Sechskantschraube|L,SW,K|Sechskantschraube, z. B. DIN 933|10.01.01.00
+C|3|ZKS|Zylinderkopfschraube|L,K,DK,SWI|Zylinderschraube mit Innensechskant, z. B. DIN 912|10.01.02.00
+C|3|SSK|Senkschraube|L,DK,SWI|Senkkopfschraube mit Innensechskant, z. B. DIN 7991|10.01.03.00
+C|3|LKS|Linsenkopfschraube|L,DK,K,SWI|Linsenkopfschraube mit Innensechskant, z. B. ISO 7380|10.01.04.00
+C|3|GST|Gewindestift|L,SWI|Gewindestift mit Innensechskant, z. B. DIN 913|10.01.05.00
+C|3|BLS|Blechschraube|L,DK|Blechschraube, z. B. DIN 7981|10.01.06.00
+C|3|HOS|Holzschraube|L,DK|Holzschraube|10.01.07.00
+C|3|RAS|Rändelschraube|L,DK|Rändelschraube zum Verstellen von Hand|10.01.08.00
+C|2|MUT|Mutter|DN,FKL|Muttern aller Art|10.02.00.00
+C|3|SKM|Sechskantmutter|SW,M|Sechskantmutter, z. B. DIN 934|10.02.01.00
+C|3|SIM|Sicherungsmutter|SW,M|Selbstsichernde Mutter mit Kunststoffring, z. B. DIN 985|10.02.02.00
+C|3|HUM|Hutmutter|SW,M|Hutmutter, z. B. DIN 1587|10.02.03.00
+C|3|FLM|Flügelmutter|M|Flügelmutter, z. B. DIN 315|10.02.04.00
+C|3|EIM|Einschlagmutter|D2,M|Einschlag- oder Einpressmutter für Holz und Kunststoff|10.02.05.00
+C|2|USC|Unterlegscheibe|DN,D1,D2,S|Flache Scheibe, z. B. DIN 125|10.03.00.00
+C|2|FRG|Federring|DN,D1,D2,S|Federring, z. B. DIN 127|10.04.00.00
+C|2|ZSC|Zahnscheibe|DN,D1,D2,S|Zahnscheibe, z. B. DIN 6797|10.05.00.00
+C|2|BOL|Bolzen|DN,L|Bolzen, z. B. ISO 2341|10.06.00.00
+C|2|STI|Zylinderstift|DN,L|Zylinderstift, z. B. ISO 2338|10.07.00.00
+C|2|SPL|Splint|DN,L|Splint, z. B. ISO 1234|10.08.00.00
+C|2|SIR|Sicherungsring|DN,S|Sicherungsring für Wellen oder Bohrungen|10.09.00.00
+C|2|PFE|Passfeder|B,H,L|Passfeder, z. B. DIN 6885|10.10.00.00
+C|2|GEI|Gewindeeinsatz|DN,L|Gewindeeinsatz zum Einkleben oder Einschrauben|10.11.00.00
+
+# ---------------- 1 Mechanik ----------------
+C|1|MECH|Mechanik|@ALLG,WERKSTOFF,OBERFL|Mechanische Kaufteile für den Modellbau|20.00.00.00
+C|2|LAG|Lager|D1,D2,B,LAGERNR|Lager und Führungen|20.01.00.00
+C|3|KUL|Kugellager|LAGERNR|Rillenkugellager, z. B. 608ZZ|20.01.01.00
+C|3|GLB|Gleitlager / Buchse|L|Gleitlager, Buchsen und Hülsen|20.01.02.00
+C|3|LNL|Linearlager|L|Linearlager und Linearführung|20.01.03.00
+C|2|ZRD|Zahnräder und Riementriebe|ZAEHNE,D1,D2|Zahnräder, Riemenscheiben und Riemen|20.02.00.00
+C|3|STR|Stirnrad|MODUL,B|Stirnrad mit Gerad- oder Schrägverzahnung|20.02.01.00
+C|3|KEL|Kegelrad|MODUL,B|Kegelrad|20.02.02.00
+C|3|SNR|Schneckenrad|MODUL,B|Schneckenrad oder Schnecke|20.02.03.00
+C|3|ZRS|Zahnriemenscheibe|ZAHNPROFIL,TEILUNG,RIEMBR|Zahnriemenscheibe|20.02.04.00
+C|3|ZRM|Zahnriemen|ZAHNPROFIL,TEILUNG,RIEMBR,L|Zahnriemen, geschlossen oder Meterware|20.02.05.00
+C|2|WEL|Wellen und Kupplungen|D2,L|Wellen, Achsen und Verbindungselemente|20.03.00.00
+C|3|WLL|Welle / Achse|D2,L|Welle, Achse oder Rundstab als Maschinenelement|20.03.01.00
+C|3|KUP|Wellenkupplung|BOHR1,BOHR2|Wellenkupplung|20.03.02.00
+C|3|STE|Stellring|D1,D2,B|Stellring mit Klemmschraube|20.03.03.00
+C|2|FED|Federn|D2,DRAHTD,L,FEDERRATE|Federn|20.04.00.00
+C|3|DFD|Druckfeder|L|Druckfeder|20.04.01.00
+C|3|ZFD|Zugfeder|L|Zugfeder|20.04.02.00
+C|2|RAD|Räder und Reifen|D1,D2,BREITER|Räder, Reifen und Felgen|20.05.00.00
+C|3|REI|Reifen|BREITER|Reifen|20.05.01.00
+C|3|FEL|Felge|BREITER|Felge oder Radnabe|20.05.02.00
+C|2|GES|Gestänge und Anlenkung|L|Teile für Anlenkungen und Gestänge|20.06.00.00
+C|3|GAB|Gabelkopf|GEW|Gabelkopf mit Bolzen|20.06.01.00
+C|3|KGP|Kugelpfanne|GEW|Kugelpfanne oder Kugelkopf|20.06.02.00
+C|3|RHN|Ruderhorn|L|Ruderhorn oder Servohebel|20.06.03.00
+C|2|BEF|Befestigung und Zubehör|L|Kleinteile zur Befestigung|20.07.00.00
+C|3|DIS|Distanzhülse|D1,D2|Distanzhülse oder Abstandsrolle|20.07.01.00
+C|3|DBZ|Distanzbolzen|GEW,SW|Distanzbolzen mit Gewinde|20.07.02.00
+C|3|KAB|Kabelbinder|B,FARBE|Kabelbinder|20.07.03.00
+C|3|SCL|Schelle|D2,B|Rohr- oder Kabelschelle|20.07.04.00
+
+# ---------------- 1 Hydraulik und Pneumatik ----------------
+C|1|HYD|Hydraulik und Pneumatik|@ALLG,WERKSTOFF,DRUCKMAX,ANSCHL|Teile für Hydraulik- und Pneumatiksysteme|30.00.00.00
+C|2|ZYL|Zylinder|KOLBD,STANGED,HUB,L|Hydraulik- oder Pneumatikzylinder|30.01.00.00
+C|2|PMP|Pumpe|FOERDER,SPANNUNG|Pumpe und Pumpenaggregat|30.02.00.00
+C|2|VEN|Ventil|SPANNUNG|Ventil, Wegeventil und Druckventil|30.03.00.00
+C|2|HSL|Schlauch und Leitung|D1,D2,L|Schläuche und Leitungen|30.04.00.00
+C|2|VRS|Verschraubung und Fitting|D1|Verschraubungen, Winkel, T-Stücke und Kupplungen|30.05.00.00
+C|2|TNK|Behälter|INHALT|Tank oder Ölbehälter|30.06.00.00
+
+# ---------------- 1 Elektronik ----------------
+C|1|ELEK|Elektronik|@ALLG|Elektrische und elektronische Teile|40.00.00.00
+C|2|ANT|Antriebe|SPANNUNG,DREHZ,D2,L|Motoren und Servos|40.01.00.00
+C|3|MBR|Bürstenmotor|STROMMAX|Gleichstrommotor mit Bürsten|40.01.01.00
+C|3|MBL|Brushless-Motor|KV,LEISTUNG,STROMMAX|Bürstenloser Außen- oder Innenläufer|40.01.02.00
+C|3|MGT|Getriebemotor|DREHM|Motor mit Getriebe|40.01.03.00
+C|3|MSM|Schrittmotor|STROM,DREHM,B|Schrittmotor, z. B. NEMA 17|40.01.04.00
+C|3|SRV|Servo|DREHM,STELLZEIT,GETRMAT,B,H,L|Modellbauservo|40.01.05.00
+C|2|REG|Regler und Steuerung|SPANNMAX,STROMMAX|Regler, Treiber und Steuerplatinen|40.02.00.00
+C|3|ESC|Fahrtregler|STECKER,ZELLEN|Fahrtregler für Bürsten- oder Brushless-Motoren|40.02.01.00
+C|3|MTR|Motortreiber|PROT|Treiber für Motoren, Ventile und Lasten|40.02.02.00
+C|3|MCU|Mikrocontroller und Board|PROT,PINS|Mikrocontroller und Entwicklungsboards|40.02.03.00
+C|2|FUN|Funk und Fernsteuerung|KANAL,PROT,FREQ|Sender, Empfänger und Zubehör|40.03.00.00
+C|3|EMP|Empfänger|SPANNUNG|Fernsteuerempfänger|40.03.01.00
+C|3|SDR|Sender|SPANNUNG|Fernsteuersender|40.03.02.00
+C|2|AKU|Energie|SPANNUNG,STECKER|Akkus, Batterien, Lader und Wandler|40.04.00.00
+C|3|LIP|LiPo-Akku|ZELLEN,KAPAZ,CRATE,L,B,H|Lithium-Polymer-Akku|40.04.01.00
+C|3|NIM|NiMH-Akku|ZELLEN,KAPAZ|Nickel-Metallhydrid-Akku|40.04.02.00
+C|3|BAT|Batterie / Einzelzelle|KAPAZ,D2,L|Einzelzelle oder Batterie|40.04.03.00
+C|3|LAD|Ladegerät|ZELLEN,STROMMAX,LEISTUNG|Ladegerät|40.04.04.00
+C|3|SPW|Spannungswandler|SPANNMAX,STROMMAX|Spannungswandler, BEC, Step-down oder Step-up|40.04.05.00
+C|2|SNS|Sensoren|PROT,SPANNUNG|Sensoren aller Art|40.05.00.00
+C|3|GYR|Gyro / Beschleunigungssensor|PROT|Gyro, IMU und Beschleunigungssensor|40.05.01.00
+C|3|DSE|Drucksensor|DRUCKMAX|Drucksensor|40.05.02.00
+C|3|WNS|Winkelsensor / Poti|PROT|Potentiometer, Hall- und Drehgeber|40.05.03.00
+C|3|STS|Stromsensor|STROMMAX|Stromsensor|40.05.04.00
+C|2|BAU|Bauelemente|BAUFORM|Elektronische Bauelemente|40.06.00.00
+C|3|WID|Widerstand|WIDERSTAND,TOLER,LEISTUNG|Widerstand|40.06.01.00
+C|3|KON|Kondensator|CAPA,SPANNMAX,TOLER|Kondensator|40.06.02.00
+C|3|HLG|Halbleiter|SPANNMAX,STROMMAX|Dioden, Transistoren, MOSFETs und ICs|40.06.03.00
+C|3|LED|Leuchtdiode|FARBE,SPANNUNG,STROM|Leuchtdiode|40.06.04.00
+C|2|SCT|Schalter und Taster|SPANNMAX,STROMMAX|Schalter, Taster und Relais|40.07.00.00
+C|2|STV|Steckverbinder|STECKER,PINS,STROMMAX|Stecker, Buchsen und Klemmen|40.08.00.00
+C|2|KBL|Kabel und Litze|LEITERQ,L,FARBE,STROMMAX|Kabel, Litze und Servokabel|40.09.00.00
+C|2|PLA|Platinen und Module|B,L,SPANNUNG,PINS|Leiterplatten, Module und Breakouts|40.10.00.00
+C|2|AUS|Anzeigen und Ausgabe|SPANNUNG,PROT|Displays, Lautsprecher und Summer|40.11.00.00
+
+# ---------------- 1 Halbzeug und Material ----------------
+C|1|MAT|Halbzeug und Material|@ALLG,WERKSTOFF,FARBE|Halbzeug, Platten und Verbrauchsmaterial|50.00.00.00
+C|2|PRF|Profile und Rohre|L,WERKSTOFF|Profile, Rohre und Stäbe|50.01.00.00
+C|3|RDR|Rundrohr|D2,WANDST|Rundrohr|50.01.01.00
+C|3|VKR|Vierkantrohr|B,H,WANDST|Vierkant- oder Rechteckrohr|50.01.02.00
+C|3|FLP|Flachstab|B,S|Flachstab oder Flachprofil|50.01.03.00
+C|3|RST|Rundstab|D2|Rundstab oder Rundmaterial|50.01.04.00
+C|3|WNK|Winkel- und U-Profil|B,H,S|Winkelprofil oder U-Profil|50.01.05.00
+C|3|GWS|Gewindestange|GEW|Gewindestange|50.01.06.00
+C|2|PLT|Platten und Blech|S,B,L|Platten, Bleche und Folien|50.02.00.00
+C|3|SPH|Sperrholz|WERKSTOFF|Sperrholz und Multiplex|50.02.01.00
+C|3|KST|Kunststoffplatte|WERKSTOFF|Kunststoffplatte, z. B. PVC oder PE|50.02.02.00
+C|3|GFK|GFK- und CFK-Platte|WERKSTOFF|Platte aus Glas- oder Kohlefaser|50.02.03.00
+C|3|BLC|Blech|WERKSTOFF|Blech aus Stahl, Aluminium oder Messing|50.02.04.00
+C|3|DEP|Schaumplatte|WERKSTOFF|Depron, XPS und andere Schäume|50.02.05.00
+C|2|VBR|Verbrauchsmaterial|INHALT|Klebstoffe, Farben und Zubehör|50.03.00.00
+C|3|KLB|Klebstoff|ABBIND|Klebstoff, z. B. Sekundenkleber, Epoxy, Heißkleber|50.03.01.00
+C|3|FRB|Farbe und Lack|FARBE|Farbe, Lack und Grundierung|50.03.02.00
+C|3|KLE|Klebeband|B,L|Klebeband und Folie|50.03.03.00
+C|3|SSL|Schrumpfschlauch|D1,L|Schrumpfschlauch|50.03.04.00
+C|3|FIL|3D-Druck-Filament|FILAMENT,D2|Filament und Harz für den 3D-Druck|50.03.05.00
+
+# ---------------- 1 Eigene Konstruktionen ----------------
+C|1|EIG|Eigene Konstruktionen|@ALLG,ZEICHNR,REVISION,PROJEKT,FERTIG,WERKSTOFF,OBERFL,L,B,H|Selbst konstruierte Teile mit eigener CAD-Datei|60.00.00.00
+C|2|EFR|Frästeil|S|Gefrästes Teil|60.01.00.00
+C|2|EDR|Drehteil|D2|Gedrehtes Teil|60.02.00.00
+C|2|EDK|3D-Druckteil|FILAMENT,FUELL,SCHICHT|Teil aus dem 3D-Drucker|60.03.00.00
+C|2|ELA|Laser- und Blechteil|S|Lasergeschnittenes oder gebogenes Blechteil|60.04.00.00
+C|2|EGU|Gussteil|S|Gussteil, z. B. aus Urethan oder Metall|60.05.00.00
+C|2|EHO|Holz- und Kunststoffteil|S|Gesägtes oder gefrästes Teil aus Holz oder Kunststoff|60.06.00.00
+C|2|EBG|Baugruppe|PROJEKT|Selbst konstruierte Baugruppe aus mehreren Teilen|60.07.00.00
+
+# ====================================================================
+# SUCHBEGRIFFE für den Klassenvorschlag
+# Normbezeichnungen (DIN/ISO) zählen doppelt (Gewichtung 20).
+# Groß-/Kleinschreibung und Leerzeichen werden beim Vergleich ignoriert.
+# ====================================================================
+S|NORMTEIL|NT|10
+S|VERBINDUNGSELEMENT|NT|10
+S|SCHRAUBE|SCHR|10
+S|SCHRAUBEN|SCHR|10
+S|SECHSKANTSCHRAUBE|SKS|10
+S|SECHSKANT|SKS|10
+S|DIN933|SKS|20
+S|DIN931|SKS|20
+S|ISO4017|SKS|20
+S|ISO4014|SKS|20
+S|ZYLINDERKOPFSCHRAUBE|ZKS|10
+S|ZYLINDERSCHRAUBE|ZKS|10
+S|INNENSECHSKANT|ZKS|10
+S|DIN912|ZKS|20
+S|ISO4762|ZKS|20
+S|INBUS|ZKS|10
+S|SENKSCHRAUBE|SSK|10
+S|SENKKOPFSCHRAUBE|SSK|10
+S|SENKKOPF|SSK|10
+S|DIN7991|SSK|20
+S|ISO10642|SSK|20
+S|LINSENKOPFSCHRAUBE|LKS|10
+S|FLACHKOPFSCHRAUBE|LKS|10
+S|ISO7380|LKS|20
+S|GEWINDESTIFT|GST|10
+S|MADENSCHRAUBE|GST|10
+S|MADE|GST|10
+S|DIN913|GST|20
+S|DIN914|GST|20
+S|DIN916|GST|20
+S|ISO4026|GST|20
+S|ISO4027|GST|20
+S|ISO4028|GST|20
+S|ISO4029|GST|20
+S|BLECHSCHRAUBE|BLS|10
+S|DIN7981|BLS|20
+S|DIN7982|BLS|20
+S|ISO7049|BLS|20
+S|HOLZSCHRAUBE|HOS|10
+S|SPANPLATTENSCHRAUBE|HOS|10
+S|SPAX|HOS|10
+S|RÄNDELSCHRAUBE|RAS|10
+S|RAENDELSCHRAUBE|RAS|10
+S|DIN464|RAS|20
+S|MUTTER|MUT|10
+S|MUTTERN|MUT|10
+S|SECHSKANTMUTTER|SKM|10
+S|DIN934|SKM|20
+S|ISO4032|SKM|20
+S|ISO4035|SKM|20
+S|DIN439|SKM|20
+S|SICHERUNGSMUTTER|SIM|10
+S|STOPPMUTTER|SIM|10
+S|DIN985|SIM|20
+S|DIN982|SIM|20
+S|ISO10511|SIM|20
+S|NYLOC|SIM|10
+S|HUTMUTTER|HUM|10
+S|DIN1587|HUM|20
+S|FLÜGELMUTTER|FLM|10
+S|FLUEGELMUTTER|FLM|10
+S|DIN315|FLM|20
+S|EINSCHLAGMUTTER|EIM|10
+S|EINPRESSMUTTER|EIM|10
+S|T-MUTTER|EIM|10
+S|UNTERLEGSCHEIBE|USC|10
+S|SCHEIBE|USC|10
+S|BEILAGSCHEIBE|USC|10
+S|DIN125|USC|20
+S|DIN433|USC|20
+S|DIN9021|USC|20
+S|ISO7089|USC|20
+S|ISO7090|USC|20
+S|ISO7092|USC|20
+S|ISO7093|USC|20
+S|FEDERRING|FRG|10
+S|DIN127|FRG|20
+S|ZAHNSCHEIBE|ZSC|10
+S|FÄCHERSCHEIBE|ZSC|10
+S|DIN6797|ZSC|20
+S|DIN6798|ZSC|20
+S|BOLZEN|BOL|10
+S|DIN1444|BOL|20
+S|ISO2341|BOL|20
+S|ZYLINDERSTIFT|STI|10
+S|PASSSTIFT|STI|10
+S|STIFT|STI|10
+S|SPANNSTIFT|STI|10
+S|KEGELSTIFT|STI|10
+S|DIN7|STI|20
+S|DIN6325|STI|20
+S|ISO2338|STI|20
+S|ISO8734|STI|20
+S|ISO8752|STI|20
+S|ISO2339|STI|20
+S|SPLINT|SPL|10
+S|DIN94|SPL|20
+S|ISO1234|SPL|20
+S|SICHERUNGSRING|SIR|10
+S|SEEGERRING|SIR|10
+S|SEEGER|SIR|10
+S|DIN471|SIR|20
+S|DIN472|SIR|20
+S|DIN6799|SIR|20
+S|E-RING|SIR|10
+S|PASSFEDER|PFE|10
+S|DIN6885|PFE|20
+S|GEWINDEEINSATZ|GEI|10
+S|HELICOIL|GEI|10
+S|EINSCHMELZMUTTER|GEI|10
+S|GEWINDEBUCHSE|GEI|10
+S|MECHANIK|MECH|10
+S|LAGER|LAG|10
+S|KUGELLAGER|KUL|10
+S|RILLENKUGELLAGER|KUL|10
+S|608ZZ|KUL|10
+S|625ZZ|KUL|10
+S|623ZZ|KUL|10
+S|688ZZ|KUL|10
+S|6000|KUL|10
+S|6001|KUL|10
+S|6200|KUL|10
+S|2RS|KUL|10
+S|ZZ|KUL|10
+S|GLEITLAGER / BUCHSE|GLB|10
+S|GLEITLAGER|GLB|10
+S|BUCHSE|GLB|10
+S|LAGERBUCHSE|GLB|10
+S|SINTERLAGER|GLB|10
+S|IGUS|GLB|10
+S|LINEARLAGER|LNL|10
+S|LINEARFÜHRUNG|LNL|10
+S|LINEARFUEHRUNG|LNL|10
+S|LM8UU|LNL|10
+S|LM10UU|LNL|10
+S|MGN12|LNL|10
+S|SCHIENE|LNL|10
+S|ZAHNRÄDER UND RIEMENTRIEBE|ZRD|10
+S|ZAHNRAD|ZRD|10
+S|GETRIEBE|ZRD|10
+S|STIRNRAD|STR|10
+S|RITZEL|STR|10
+S|KEGELRAD|KEL|10
+S|SCHNECKENRAD|SNR|10
+S|SCHNECKE|SNR|10
+S|ZAHNRIEMENSCHEIBE|ZRS|10
+S|RIEMENSCHEIBE|ZRS|10
+S|PULLEY|ZRS|10
+S|ZAHNRIEMEN|ZRM|10
+S|RIEMEN|ZRM|10
+S|GT2|ZRM|10
+S|WELLEN UND KUPPLUNGEN|WEL|10
+S|WELLE|WEL|10
+S|ACHSE|WEL|10
+S|KUPPLUNG|WEL|10
+S|WELLE / ACHSE|WLL|10
+S|WELLE|WLL|10
+S|ACHSE|WLL|10
+S|SILBERSTAHL|WLL|10
+S|WELLENKUPPLUNG|KUP|10
+S|KUPPLUNG|KUP|10
+S|KLAUENKUPPLUNG|KUP|10
+S|STELLRING|STE|10
+S|DIN705|STE|20
+S|FEDERN|FED|10
+S|FEDER|FED|10
+S|DRUCKFEDER|DFD|10
+S|ZUGFEDER|ZFD|10
+S|RÄDER UND REIFEN|RAD|10
+S|RAD|RAD|10
+S|RÄDER|RAD|10
+S|REIFEN|REI|10
+S|FELGE|FEL|10
+S|RADNABE|FEL|10
+S|GESTÄNGE UND ANLENKUNG|GES|10
+S|GESTÄNGE|GES|10
+S|ANLENKUNG|GES|10
+S|GESTAENGE|GES|10
+S|GABELKOPF|GAB|10
+S|KUGELPFANNE|KGP|10
+S|KUGELKOPF|KGP|10
+S|KUGELGELENK|KGP|10
+S|RUDERHORN|RHN|10
+S|SERVOHEBEL|RHN|10
+S|SERVOARM|RHN|10
+S|BEFESTIGUNG UND ZUBEHÖR|BEF|10
+S|BEFESTIGUNG|BEF|10
+S|DISTANZHÜLSE|DIS|10
+S|DISTANZHUELSE|DIS|10
+S|ABSTANDSHÜLSE|DIS|10
+S|ABSTANDSROLLE|DIS|10
+S|DISTANZBOLZEN|DBZ|10
+S|ABSTANDSBOLZEN|DBZ|10
+S|SPACER|DBZ|10
+S|KABELBINDER|KAB|10
+S|SCHELLE|SCL|10
+S|ROHRSCHELLE|SCL|10
+S|KABELSCHELLE|SCL|10
+S|HYDRAULIK UND PNEUMATIK|HYD|10
+S|HYDRAULIK|HYD|10
+S|PNEUMATIK|HYD|10
+S|ZYLINDER|ZYL|10
+S|HYDRAULIKZYLINDER|ZYL|10
+S|PNEUMATIKZYLINDER|ZYL|10
+S|PUMPE|PMP|10
+S|HYDRAULIKPUMPE|PMP|10
+S|ZAHNRADPUMPE|PMP|10
+S|VENTIL|VEN|10
+S|WEGEVENTIL|VEN|10
+S|STEUERVENTIL|VEN|10
+S|DRUCKBEGRENZUNGSVENTIL|VEN|10
+S|SCHLAUCH UND LEITUNG|HSL|10
+S|SCHLAUCH|HSL|10
+S|HYDRAULIKSCHLAUCH|HSL|10
+S|LEITUNG|HSL|10
+S|VERSCHRAUBUNG UND FITTING|VRS|10
+S|VERSCHRAUBUNG|VRS|10
+S|FITTING|VRS|10
+S|NIPPEL|VRS|10
+S|WINKELSTÜCK|VRS|10
+S|T-STÜCK|VRS|10
+S|BEHÄLTER|TNK|10
+S|TANK|TNK|10
+S|ÖLTANK|TNK|10
+S|OELTANK|TNK|10
+S|ELEKTRONIK|ELEK|10
+S|ANTRIEBE|ANT|10
+S|ANTRIEB|ANT|10
+S|MOTOR|ANT|10
+S|BÜRSTENMOTOR|MBR|10
+S|BUERSTENMOTOR|MBR|10
+S|GLEICHSTROMMOTOR|MBR|10
+S|DC-MOTOR|MBR|10
+S|RS540|MBR|10
+S|RS550|MBR|10
+S|RS380|MBR|10
+S|BRUSHLESS-MOTOR|MBL|10
+S|BRUSHLESS|MBL|10
+S|BÜRSTENLOS|MBL|10
+S|AUSSENLÄUFER|MBL|10
+S|INNENLÄUFER|MBL|10
+S|BLDC|MBL|10
+S|GETRIEBEMOTOR|MGT|10
+S|SCHRITTMOTOR|MSM|10
+S|NEMA17|MSM|10
+S|NEMA23|MSM|10
+S|STEPPER|MSM|10
+S|SERVO|SRV|10
+S|DIGITALSERVO|SRV|10
+S|MG996R|SRV|10
+S|SG90|SRV|10
+S|REGLER UND STEUERUNG|REG|10
+S|REGLER|REG|10
+S|STEUERUNG|REG|10
+S|FAHRTREGLER|ESC|10
+S|ESC|ESC|10
+S|DREHZAHLREGLER|ESC|10
+S|MOTORTREIBER|MTR|10
+S|TREIBER|MTR|10
+S|H-BRÜCKE|MTR|10
+S|L298|MTR|10
+S|DRV8825|MTR|10
+S|TMC2209|MTR|10
+S|MIKROCONTROLLER UND BOARD|MCU|10
+S|MIKROCONTROLLER|MCU|10
+S|ARDUINO|MCU|10
+S|ESP32|MCU|10
+S|ESP8266|MCU|10
+S|RASPBERRY|MCU|10
+S|STM32|MCU|10
+S|RP2040|MCU|10
+S|FUNK UND FERNSTEUERUNG|FUN|10
+S|FERNSTEUERUNG|FUN|10
+S|FUNK|FUN|10
+S|EMPFÄNGER|EMP|10
+S|EMPFAENGER|EMP|10
+S|RECEIVER|EMP|10
+S|SENDER|SDR|10
+S|FERNSTEUERSENDER|SDR|10
+S|TANDEM|SDR|10
+S|ENERGIE|AKU|10
+S|AKKU|AKU|10
+S|BATTERIE|AKU|10
+S|LIPO-AKKU|LIP|10
+S|LIPO|LIP|10
+S|LITHIUM-POLYMER|LIP|10
+S|2S|LIP|10
+S|3S|LIP|10
+S|4S|LIP|10
+S|6S|LIP|10
+S|NIMH-AKKU|NIM|10
+S|NIMH|NIM|10
+S|BATTERIE / EINZELZELLE|BAT|10
+S|BATTERIE|BAT|10
+S|18650|BAT|10
+S|21700|BAT|10
+S|MIGNON|BAT|10
+S|AA|BAT|10
+S|AAA|BAT|10
+S|LADEGERÄT|LAD|10
+S|LADEGERAET|LAD|10
+S|LADER|LAD|10
+S|SPANNUNGSWANDLER|SPW|10
+S|BEC|SPW|10
+S|STEP-DOWN|SPW|10
+S|STEP-UP|SPW|10
+S|DC-DC|SPW|10
+S|UBEC|SPW|10
+S|SENSOREN|SNS|10
+S|SENSOR|SNS|10
+S|GYRO / BESCHLEUNIGUNGSSENSOR|GYR|10
+S|GYRO|GYR|10
+S|IMU|GYR|10
+S|BESCHLEUNIGUNGSSENSOR|GYR|10
+S|MPU6050|GYR|10
+S|BNO055|GYR|10
+S|DRUCKSENSOR|DSE|10
+S|WINKELSENSOR / POTI|WNS|10
+S|WINKELSENSOR|WNS|10
+S|POTI|WNS|10
+S|POTENTIOMETER|WNS|10
+S|DREHGEBER|WNS|10
+S|ENCODER|WNS|10
+S|HALLSENSOR|WNS|10
+S|STROMSENSOR|STS|10
+S|ACS712|STS|10
+S|INA219|STS|10
+S|BAUELEMENTE|BAU|10
+S|BAUELEMENT|BAU|10
+S|BAUTEIL|BAU|10
+S|WIDERSTAND|WID|10
+S|OHM|WID|10
+S|KONDENSATOR|KON|10
+S|ELKO|KON|10
+S|KERKO|KON|10
+S|HALBLEITER|HLG|10
+S|DIODE|HLG|10
+S|TRANSISTOR|HLG|10
+S|MOSFET|HLG|10
+S|IC|HLG|10
+S|LEUCHTDIODE|LED|10
+S|LED|LED|10
+S|SCHALTER UND TASTER|SCT|10
+S|SCHALTER|SCT|10
+S|TASTER|SCT|10
+S|RELAIS|SCT|10
+S|STECKVERBINDER|STV|10
+S|STECKER|STV|10
+S|BUCHSE|STV|10
+S|KLEMME|STV|10
+S|XT60|STV|10
+S|XT30|STV|10
+S|XT90|STV|10
+S|JST|STV|10
+S|DEANS|STV|10
+S|DUPONT|STV|10
+S|KABEL UND LITZE|KBL|10
+S|KABEL|KBL|10
+S|LITZE|KBL|10
+S|SERVOKABEL|KBL|10
+S|SILIKONKABEL|KBL|10
+S|AWG|KBL|10
+S|PLATINEN UND MODULE|PLA|10
+S|PLATINE|PLA|10
+S|LEITERPLATTE|PLA|10
+S|MODUL|PLA|10
+S|BREAKOUT|PLA|10
+S|ANZEIGEN UND AUSGABE|AUS|10
+S|DISPLAY|AUS|10
+S|LAUTSPRECHER|AUS|10
+S|SUMMER|AUS|10
+S|BUZZER|AUS|10
+S|OLED|AUS|10
+S|HALBZEUG UND MATERIAL|MAT|10
+S|MATERIAL|MAT|10
+S|HALBZEUG|MAT|10
+S|PROFILE UND ROHRE|PRF|10
+S|PROFIL|PRF|10
+S|ROHR|PRF|10
+S|STAB|PRF|10
+S|RUNDROHR|RDR|10
+S|ROHR|RDR|10
+S|CFK-ROHR|RDR|10
+S|ALUROHR|RDR|10
+S|MESSINGROHR|RDR|10
+S|VIERKANTROHR|VKR|10
+S|RECHTECKROHR|VKR|10
+S|FLACHSTAB|FLP|10
+S|FLACHPROFIL|FLP|10
+S|FLACHSTAHL|FLP|10
+S|RUNDSTAB|RST|10
+S|RUNDMATERIAL|RST|10
+S|RUNDSTAHL|RST|10
+S|WINKEL- UND U-PROFIL|WNK|10
+S|WINKELPROFIL|WNK|10
+S|U-PROFIL|WNK|10
+S|WINKEL|WNK|10
+S|GEWINDESTANGE|GWS|10
+S|DIN975|GWS|20
+S|DIN976|GWS|20
+S|PLATTEN UND BLECH|PLT|10
+S|PLATTE|PLT|10
+S|BLECH|PLT|10
+S|FOLIE|PLT|10
+S|SPERRHOLZ|SPH|10
+S|MULTIPLEX|SPH|10
+S|PAPPEL|SPH|10
+S|BIRKE|SPH|10
+S|KUNSTSTOFFPLATTE|KST|10
+S|PVC|KST|10
+S|POM|KST|10
+S|PE|KST|10
+S|PLEXIGLAS|KST|10
+S|ACRYL|KST|10
+S|GFK- UND CFK-PLATTE|GFK|10
+S|GFK|GFK|10
+S|CFK|GFK|10
+S|KOHLEFASER|GFK|10
+S|GLASFASER|GFK|10
+S|CARBON|GFK|10
+S|BLECH|BLC|10
+S|ALUBLECH|BLC|10
+S|MESSINGBLECH|BLC|10
+S|STAHLBLECH|BLC|10
+S|SCHAUMPLATTE|DEP|10
+S|DEPRON|DEP|10
+S|XPS|DEP|10
+S|SCHAUM|DEP|10
+S|EPP|DEP|10
+S|VERBRAUCHSMATERIAL|VBR|10
+S|KLEBSTOFF|KLB|10
+S|KLEBER|KLB|10
+S|SEKUNDENKLEBER|KLB|10
+S|EPOXY|KLB|10
+S|HEISSKLEBER|KLB|10
+S|UHU|KLB|10
+S|FARBE UND LACK|FRB|10
+S|FARBE|FRB|10
+S|LACK|FRB|10
+S|GRUNDIERUNG|FRB|10
+S|SPRÜHLACK|FRB|10
+S|KLEBEBAND|KLE|10
+S|TAPE|KLE|10
+S|FOLIE|KLE|10
+S|SCHRUMPFSCHLAUCH|SSL|10
+S|3D-DRUCK-FILAMENT|FIL|10
+S|FILAMENT|FIL|10
+S|PLA|FIL|10
+S|PETG|FIL|10
+S|ABS|FIL|10
+S|ASA|FIL|10
+S|TPU|FIL|10
+S|RESIN|FIL|10
+S|HARZ|FIL|10
+S|EIGENE KONSTRUKTIONEN|EIG|10
+S|EIGENBAU|EIG|10
+S|EIGENE KONSTRUKTION|EIG|10
+S|EIGENTEIL|EIG|10
+S|FRÄSTEIL|EFR|10
+S|FRAESTEIL|EFR|10
+S|GEFRÄST|EFR|10
+S|CNC|EFR|10
+S|DREHTEIL|EDR|10
+S|GEDREHT|EDR|10
+S|3D-DRUCKTEIL|EDK|10
+S|3D-DRUCK|EDK|10
+S|GEDRUCKT|EDK|10
+S|DRUCKTEIL|EDK|10
+S|LASER- UND BLECHTEIL|ELA|10
+S|LASERTEIL|ELA|10
+S|BLECHTEIL|ELA|10
+S|GELASERT|ELA|10
+S|GUSSTEIL|EGU|10
+S|GEGOSSEN|EGU|10
+S|HOLZ- UND KUNSTSTOFFTEIL|EHO|10
+S|HOLZTEIL|EHO|10
+S|KUNSTSTOFFTEIL|EHO|10
+S|BAUGRUPPE|EBG|10
+S|ZUSAMMENBAU|EBG|10

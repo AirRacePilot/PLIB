@@ -1,0 +1,3 @@
+Version=0.8.1
+Download=PLIB_Setup_0.8.1.exe
+Hinweis=Beispieltext: Was ist neu in dieser Version|Zweite Zeile

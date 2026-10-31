@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>PLIB Bedienungsanleitung</title>
+<style>body{font-family:"Segoe UI",Arial;font-size:10pt} h1{font-size:20pt} h2{font-size:15pt;color:#1a5fb4} h3{font-size:12pt} h4{font-size:11pt} code,pre,kbd{font-family:Consolas,"Courier New"}</style></head>
+<body>
+<a name="top"></a>
+
+<h1>PLIB Teilebibliothek</h1>
+<p>Eine Teilebibliothek nach der Idee der Normenreihe ISO 13584 (PLIB) und IEC 61360. Teile werden in Klassen (Teilefamilien) geordnet, Klassen vererben Merkmale, und jedes Teil trägt Werte für diese Merkmale. Die Anleitung beschreibt alle Funktionen des Programms.</p>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"><tr><td bgcolor="#eef6ee"><b>Schnell einsteigen</b><br/>
+Die wichtigsten Wege: <b>Klasse anklicken</b> zeigt ihre Teile · <kbd>Strg</kbd>+<kbd>F</kbd> sucht Teile · <kbd>Strg</kbd>+<kbd>N</kbd> legt eine Klasse an · <kbd>Strg</kbd>+<kbd>T</kbd> ein Teil · Rechtsklick öffnet überall das passende Menü · <kbd>F1</kbd> öffnet diese Anleitung.</td></tr></table><h3>Inhalt</h3><ul><li><a href="#uebersicht">1 Überblick und Begriffe</a></li><li><a href="#start">2 Installation und Start</a></li><li><a href="#oberflaeche">3 Die Oberfläche</a></li><li><a href="#klassen">4 Klassen</a></li><li><a href="#merkmale">5 Merkmale</a></li><li><a href="#teile">6 Teile und Werte</a></li><li><a href="#vorschlag">7 Klassenvorschlag und Suchbegriffe</a></li><li><a href="#stammdaten">8 Lieferanten, Einheiten, Kennungen</a></li><li><a href="#suche">9 Suche</a></li><li><a href="#sprachen">10 Mehrsprachigkeit</a></li><li><a href="#datenbank">11 Datenbank und Sicherung</a></li><li><a href="#postgres">12 PostgreSQL auf dem NAS</a></li><li><a href="#solidedge">13 Solid Edge und CAD-Kataloge</a></li><li><a href="#tasten">14 Tastatur und Maus</a></li><li><a href="#fehler">15 Fehler und Hilfe</a></li><li><a href="#dateien">16 Dateien und Ordner</a></li><li><a href="#grenzen">17 Grenzen und Ausblick</a></li><li><a href="#glossar">18 Glossar</a></li></ul>
+<!-- ===================================================== -->
+<a name="uebersicht"></a><h2>1 Überblick und Begriffe</h2>
+<h3>Das Grundprinzip</h3>
+<p>PLIB trennt <b>was ein Teil beschreibt</b> von <b>dem einzelnen Teil</b>:</p>
+<ul>
+<li><b>Klasse:</b> eine Teilefamilie, zum Beispiel „Sechskantschraube". Klassen bilden einen Baum (Oberklasse, Unterklassen).</li>
+<li><b>Merkmal:</b> eine Eigenschaft wie Länge, Schlüsselweite oder Werkstoff. Ein Merkmal hat einen Datentyp und gegebenenfalls eine Einheit.</li>
+<li><b>Vererbung:</b> Ein Merkmal, das einer Klasse zugeordnet ist, gilt auch für alle ihre Unterklassen. „Werkstoff" an „Normteil" gilt also für alle Schrauben, Muttern und Scheiben.</li>
+<li><b>Teil:</b> ein konkretes Bauteil, zum Beispiel „SKS-M8x40". Es gehört zu genau einer Klasse und trägt Werte für deren Merkmale.</li>
+</ul>
+<p align="center"><img alt="Abbildung 1" src="bilder/fig1.png" width="100%"/></p><p align="center"><i>Abbildung 1: Vererbung. Jede Klasse bekommt die Merkmale ihrer Oberklassen dazu (Beispielwerte).</i></p>
+<h3>Weitere Begriffe</h3>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Begriff</th><th align="left" bgcolor="#e8f0fb">Bedeutung</th></tr>
+<tr><td>Code</td><td>Kurzer eindeutiger Name einer Klasse, eines Merkmals, Lieferanten oder einer Einheit. Erlaubt sind Buchstaben, Ziffern sowie <code>-</code> <code>_</code> <code>.</code>, höchstens 40 Zeichen.</td></tr>
+<tr><td>Klassennummer</td><td>Vierstufige Nummer jeder Klasse der Form <code>AA.BB.CC.DD</code>, zum Beispiel <code>10.01.01.00</code>. Sie ist eindeutig und legt fest, wo die Klasse im Baum steht (siehe <a href="#klassennummer">Die Klassennummer</a>).</td></tr>
+<tr><td>Suchbegriff</td><td>Wort, an dem PLIB eine Klasse erkennt. Grundlage des Klassenvorschlags für neue Teile (<a href="#vorschlag">Kapitel 7</a>).</td></tr>
+<tr><td>CAD-Link</td><td>Adresse eines Teils in einem CAD-Katalog (3DfindIT, PARTcommunity). PLIB öffnet sie und übernimmt die heruntergeladene Datei.</td></tr>
+<tr><td>Lieferant</td><td>Die Stelle, die ein Element herausgibt oder pflegt. Er ist Teil der Kennung.</td></tr>
+<tr><td>Kennung (BSU / IRDI)</td><td>Eindeutige Bezeichnung aus Lieferant, Code und Version, zum Beispiel <code>EIGEN/SKS#1</code>.</td></tr>
+<tr><td>Status</td><td><font color="#f0a830">●</font>in Arbeit · <font color="#3ca046">●</font>freigegeben · <font color="#b4b4b4">●</font>veraltet. Gilt für Klassen und Merkmale.</td></tr>
+<tr><td>Version</td><td>Zähler einer Klasse oder eines Merkmals, wird bei bedeutenden Änderungen erhöht.</td></tr>
+<tr><td>Einheit</td><td>Aus dem Einheitenverzeichnis, mit Umrechnung zwischen Einheiten gleicher Größenart (zum Beispiel mm und m).</td></tr>
+<tr><td>Aufzählung (enum)</td><td>Merkmal mit einer festen Liste erlaubter Werte, zum Beispiel Oberfläche: blank, verzinkt, brüniert.</td></tr>
+<tr><td>Merkmalkatalog</td><td>Die Liste aller Merkmale der Bibliothek, unabhängig davon, welcher Klasse sie zugeordnet sind.</td></tr>
+</table>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"><tr><td bgcolor="#eef6ee"><b>Hinweis</b><br/>
+PLIB setzt die Grundgedanken der ISO 13584 in vereinfachter Form um. Es ist kein zertifiziertes oder normkonformes System. Details siehe <a href="#grenzen">Kapitel 17</a>.</td></tr></table>
+<!-- ===================================================== -->
+<a name="start"></a><h2>2 Installation und Start</h2>
+<h3>Benötigte Dateien</h3>
+<p>Alle folgenden Dateien liegen im selben Ordner wie <code>plib.exe</code>:</p>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Datei</th><th align="left" bgcolor="#e8f0fb">Wofür</th></tr>
+<tr><td><code>plib.exe</code></td><td>Das Programm.</td></tr>
+<tr><td><code>sqlite3.dll</code></td><td>64-Bit-Bibliothek für die SQLite-Datenbank. Muss zur Bitzahl des Programms passen.</td></tr>
+<tr><td><code>libpq.dll</code> und weitere <code>lib*.dll</code></td><td>Nur nötig bei Betrieb mit PostgreSQL (siehe <a href="#postgres">Kapitel 12</a>).</td></tr>
+<tr><td><code>hilfe\hilfe.html</code> und <code>hilfe\bilder\</code></td><td>Diese Anleitung im Programm. <kbd>F1</kbd> öffnet sie.</td></tr>
+<tr><td><code>plib_hilfe.html</code></td><td>Dieselbe Anleitung für den Browser, mit Volltextsuche.</td></tr>
+<tr><td><code>modellbau_klassenbaum.txt</code>, <code>normteile.txt</code></td><td>Importdateien (optional), siehe Erster Start.</td></tr>
+</table>
+<h3>Erster Start</h3>
+<ol>
+<li>Starte <code>plib.exe</code> per Doppelklick.</li>
+<li>Beim ersten Start legt PLIB die Datenbank <code>plib.sqlite3</code> neben dem Programm an und füllt sie mit einer kleinen Beispielstruktur (Normteil, Schraube, Sechskantschraube).</li>
+<li>Mit <b>Datei → Musterdaten einfügen</b> lädst du zusätzlich Normteile: Schrauben (DIN 933, DIN 912), Muttern (DIN 934), Scheiben (DIN 125), Bolzen (ISO 2341) und Zylinderstifte (ISO 2338). Vorhandenes bleibt unverändert, der Befehl lässt sich gefahrlos wiederholen.</li>
+<li>Mit <b>Datei → Klassenbaum aus Textdatei importieren</b> legst du einen fertigen Klassenbaum für den Modellbau an (Normteile, Mechanik, Hydraulik/Pneumatik, Elektronik, Halbzeug, Eigene Konstruktionen). Die Datei <code>modellbau_klassenbaum.txt</code> enthält die Klassen mit ihren vierstufigen Klassennummern, die Merkmale, die Einheiten und die <b>Suchbegriffe</b>, mit denen PLIB später Klassen für neue Teile vorschlägt. Das Format steht in <a href="#datenbank">Kapitel 11</a>.</li>
+<li>Mit <b>Datei → Normteile (Schrauben, Muttern …) importieren</b> liest du die Datei <code>normteile.txt</code> ein: fertige Teile mit Beschreibung, Merkmalswerten und Hersteller. Diese Teile dienen zugleich als Vergleichsbasis für den Klassenvorschlag (<a href="#vorschlag">Kapitel 7</a>).</li>
+<li>Mit <b>Datei → Klassenbilder aus Ordner importieren</b> bekommen alle Klassen auf einmal ein Bild. Der Ordner <code>klassenbilder</code> neben der <code>plib.exe</code> enthält für jede Klasse des Modellbau-Klassenbaums ein Bild; der Dateiname ist der Klassencode.</li>
+<li>Soll der Bestand später ganz neu aufgebaut werden, leert <b>Datei → Datenbank leeren</b> alle Klassen, Merkmale, Teile und Werte (zweimal Rückfrage). Lieferanten, Einheiten und die Punkte des Klassenvorschlags bleiben erhalten. Lege vorher eine Sicherung an.</li>
+</ol>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"><tr><td bgcolor="#fff5e6"><b>Maßangaben der Musterdaten</b><br/>
+Die Maße der Musterteile sind Richtwerte. Gleiche sie vor einer ernsthaften Verwendung mit den Normen ab.</td></tr></table>
+<h3>Programmparameter</h3>
+<pre>plib.exe "D:\Daten\teile.sqlite3"
+plib.exe --db=D:\Daten\teile.sqlite3</pre>
+<p>Der Parameter erzwingt eine SQLite-Datenbank an diesem Ort und hat Vorrang vor <code>plib.ini</code>. So lassen sich mit Windows-Verknüpfungen mehrere Datenbanken bequem starten.</p>
+<h3>Die Einstellungsdatei plib.ini</h3>
+<p>Wird neben dem Programm angelegt und beim Beenden aktualisiert. Du kannst sie mit dem Editor ansehen.</p>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Abschnitt</th><th align="left" bgcolor="#e8f0fb">Inhalt</th></tr>
+<tr><td><code>[Layout]</code></td><td>Fenstergröße, Breite des Baums, Höhe der Teileliste, Knopfleiste ein/aus, zuletzt gewählte Klasse, Anzeige der Kennungen, Datensprache, Klassenbild-Fenster.</td></tr>
+<tr><td><code>[Datenbank]</code></td><td>Typ (<code>sqlite</code> oder <code>postgresql</code>), SQLite-Pfad, PostgreSQL-Zugangsdaten.</td></tr>
+<tr><td><code>[Spalten]</code></td><td>Gemerkte Spaltenreihenfolge der Teile- und Werteliste.</td></tr>
+<tr><td><code>[Ansicht]</code></td><td>Aussehen: <code>Design</code> (<code>dunkel</code> oder <code>hell</code>), <code>Menueband</code> (<code>ja</code>/<code>nein</code>), <code>Schriftgroesse</code> (7 bis 24 Punkt, 0 = Windows-Vorgabe), <code>Hochaufloesend</code> (<code>nein</code> schaltet die scharfe Darstellung auf 4K-Monitoren ab).</td></tr>
+<tr><td><code>[SolidEdge]</code></td><td>Basisordner der CAD-Dateien (<code>Basisordner</code>) und Download-Ordner des Browsers für CAD-Kataloge (<code>Downloadordner</code>) sowie die Teilevorlage für STEP-Dateien (<code>VorlageTeil</code>, siehe Kapitel 13).</td></tr>
+</table>
+<!-- ===================================================== -->
+<a name="oberflaeche"></a><h2>3 Die Oberfläche</h2>
+<p>Das Fenster besteht von oben nach unten aus Menüleiste, Knopfleiste, dem Arbeitsbereich und der Statusleiste. In der Standardanordnung hat der Arbeitsbereich links den <b>Klassenbaum</b> und darunter das <b>Klassenbild</b>, rechts oben die <b>Teileliste</b> und darunter die <b>Werteliste</b>. Das Klassenbild ist immer sichtbar und zeigt das Bild der gerade gewählten Klasse.</p>
+<p>Die Bereiche und die Knopfleiste lassen sich frei anordnen, ähnlich wie in der Lazarus-Entwicklungsumgebung (siehe <a href="#anordnen">Bereiche frei anordnen</a>). Die Anordnung wird gemerkt. „Ansicht → Fensteraufteilung zurücksetzen" stellt die Standardanordnung wieder her.</p>
+<p align="center"><img alt="Abbildung 2" src="bilder/fig2.png" width="100%"/></p><p align="center"><i>Abbildung 2: Das Hauptfenster in der Standardanordnung (schematisch, die Werte sind Beispiele). Die Zahlen werden unten erklärt.</i></p>
+<ol>
+<li><b>Menüleiste</b> mit allen Befehlen.</li>
+<li><b>Knopfleiste</b> mit den wichtigsten Funktionen.</li>
+<li><b>Klassenbaum</b>, farbig nach Status.</li>
+<li><b>Teileliste</b> der gewählten Klasse mit Merkmalsspalten.</li>
+<li><b>Werteliste</b> des gewählten Teils.</li>
+<li><b>Klassenbild</b>, immer sichtbar, folgt der gewählten Klasse.</li>
+<li><b>Statusleiste</b> mit fünf Feldern.</li>
+<li><b>Trennlinien</b> (gestrichelt), mit der Maus verschiebbar. Jeder Bereich hat eine <b>Titelleiste</b> (blau) zum Umsetzen.</li>
+<li><b>Griff</b> der Knopfleiste zum Verschieben.</li>
+</ol>
+<a name="menues"></a><h3>Die Menüleiste</h3>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Menü</th><th align="left" bgcolor="#e8f0fb">Befehle</th></tr>
+<tr><td><b>Datei</b></td><td>Datenbank wechseln / Pfad festlegen · Mit PostgreSQL-Server verbinden · Daten aus SQLite-Datei nach PostgreSQL übernehmen · PostgreSQL-Daten als SQLite-Datei exportieren (zum Beispiel für den Mac) · Musterdaten einfügen · <b>Datenbank leeren</b> (Klassen, Merkmale, Teile) · Klassenbaum aus Textdatei importieren · <b>Normteile importieren</b> · Klassenbilder aus Ordner importieren · Datenbank sichern · Datenbank prüfen · Sicherung wiederherstellen · Sicherungsordner öffnen · Beenden</td></tr>
+<tr><td><b>Suche</b></td><td><b>Teilesuche (mit Merkmalfiltern)</b> (<kbd>Strg</kbd>+<kbd>F</kbd>) · Klassen und Merkmale suchen</td></tr>
+<tr><td><b>Klassen</b></td><td>Neue Klasse (<kbd>Strg</kbd>+<kbd>N</kbd>) · Klasse umbenennen (<kbd>F2</kbd>) · Beschreibung / Status (<kbd>Strg</kbd>+<kbd>D</kbd>) · Übersetzung der Klasse · Klassenbild zuordnen · Klassenbild entfernen · <b>Suchbegriffe der Klasse</b> · Klasse löschen</td></tr>
+<tr><td><b>Merkmale</b></td><td>Merkmale der gewählten Klasse verwalten (<kbd>Strg</kbd>+<kbd>M</kbd>) · Merkmalkatalog (<kbd>Strg</kbd>+<kbd>K</kbd>)</td></tr>
+<tr><td><b>Teile</b></td><td>Neues Teil (<kbd>Strg</kbd>+<kbd>T</kbd>) · Werte / Teil bearbeiten (<kbd>Strg</kbd>+<kbd>E</kbd>) · Teil löschen · <b>CAD-Katalog-Link öffnen (3DfindIT / PARTcommunity)</b> · <b>Alte Teilenummern auf 7-stellig umstellen</b> (einmalig, siehe Kapitel 6)</td></tr>
+<tr><td><b>Stammdaten</b></td><td>Lieferanten · Datenquellen im Internet (ETIM) · Einheiten · <b>Punkte für den Klassenvorschlag</b></td></tr>
+<tr><td><b>Solid Edge</b></td><td>Teil in Solid Edge öffnen (<kbd>Strg</kbd>+<kbd>O</kbd>) · CAD-Datei zuordnen / entfernen · Eigenschaften nach Solid Edge schreiben · Teil in Baugruppe einfügen · Aktuelles Dokument in PLIB zeigen (<kbd>Strg</kbd>+<kbd>G</kbd>) · Basisordner für CAD-Dateien festlegen · <b>Download-Ordner für CAD-Kataloge festlegen</b> · Verbindung testen</td></tr>
+<tr><td><b>Plugins</b></td><td>Erzeugt Modelle für das gewählte Teil, zum Beispiel „STEP-Modell erzeugen (SolidCraft)". Das Menü erscheint nur, wenn im Ordner <code>plugins</code> ein Plugin liegt. Die Befehle stehen auch im Rechtsklick-Menü der Teileliste.</td></tr>
+<tr><td><b>Ansicht</b></td><td><b>Dunkles Design</b> · <b>Menüband</b> (nach Neustart) · <b>Schriftgröße</b> · <b>Anzeige-Info</b> · <b>Tabellenspalten ein-/ausblenden</b> · Knopfleiste anzeigen · Bereiche (Klassenbaum, Teileliste, Werteliste, Klassenbild ein- und ausblenden) · Aktualisieren (<kbd>F5</kbd>) · Klassenbaum aufklappen / zuklappen · Fensteraufteilung zurücksetzen · Spaltenreihenfolge zurücksetzen · Datensprache wählen · Kennungen als IRDI anzeigen · Kennungen im Baum anzeigen</td></tr>
+<tr><td><b>Hilfe</b></td><td>Bedienungsanleitung (<kbd>F1</kbd>, mit Suchfeld) · Anleitung im Browser öffnen · Kurzhilfe · <b>Über</b> (Version, Entwickler, Copyright) · Fehlerprotokoll anzeigen</td></tr>
+</table>
+<h3>Aussehen: Design, Menüband und Schriftgröße</h3>
+<p>Alle Einstellungen findest du im Menü <b>Ansicht</b>. Sie werden in <code>plib.ini</code> gemerkt.</p>
+<ul>
+<li><b>Dunkles Design:</b> Schaltet zwischen dunkler und heller Darstellung um. Nach dem Umschalten fragt PLIB, ob es neu starten soll; erst nach dem Neustart gilt das Design überall, auch in den Menüs.</li>
+<li><b>Menüband:</b> Zeigt statt der Menü- und Knopfleiste ein Band mit Reitern (Start, Klassen, Merkmale, Teile, Solid Edge, Hilfe), ähnlich wie in Solid Edge. Die Menüs stehen rechts neben den Reitern. Die Einstellung gilt nach einem Neustart; ohne Häkchen erscheint wieder die klassische Knopfleiste.</li>
+<li><b>Schriftgröße:</b> Wählbar von 9 bis 16 Punkt oder „Windows-Vorgabe". Die Größe gilt sofort für das Hauptfenster; Dialoge und Meldungen passen sich beim Öffnen an.</li>
+<li><b>Anzeige-Info:</b> Zeigt, ob PLIB auf hochauflösenden Monitoren scharf darstellt (DPI-Bewusstsein, Skalierung, Bildschirmgröße). Das hilft bei unscharfer Schrift.</li>
+</ul>
+<p>Optional liegt neben <code>plib.exe</code> ein Ordner <code>fonts</code> mit <code>IBMPlexSans-Regular.ttf</code> und <code>IBMPlexSans-Bold.ttf</code>. PLIB verwendet die Schrift dann nur für sich (sie wird nicht installiert). Fehlen die Dateien, nimmt PLIB die Windows-Schrift.</p>
+<a name="knoepfe"></a><h3>Die Knopfleiste</h3>
+<p>Quadratische Knöpfe mit Symbol. Hält man die Maus kurz darüber, erscheint ein Hinweis mit Name, Tastenkürzel und Wirkung. Bei schmalem Fenster bricht die Leiste in eine zweite Zeile um. Über „Ansicht → Knopfleiste anzeigen" blendest du sie aus. Am Griff ganz links (zwei Doppelpunkte) lässt sich die Leiste an einen anderen Fensterrand setzen oder frei schweben lassen, siehe <a href="#anordnen">Bereiche frei anordnen</a>.</p>
+<p align="center"><img alt="Abbildung 3" src="bilder/fig3.png" width="100%"/></p><p align="center"><i>Abbildung 3: Die Knopfleiste, in Gruppen geordnet. Die einzelnen Symbole erklärt die Tabelle darunter.</i></p>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Symbol</th><th align="left" bgcolor="#e8f0fb">Funktion</th><th align="left" bgcolor="#e8f0fb">Kürzel</th></tr>
+<tr><td><img alt="" height="22" src="bilder/ic0.png" width="22"/>Lupe</td><td>Teilesuche</td><td><kbd>Strg</kbd>+<kbd>F</kbd></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic1.png" width="22"/>Globus</td><td>Datensprache wählen</td><td></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic2.png" width="22"/>Kästchen mit Plus</td><td>Neue Klasse</td><td><kbd>Strg</kbd>+<kbd>N</kbd></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic3.png" width="22"/>Kästchen mit Stift</td><td>Klasse umbenennen</td><td><kbd>F2</kbd></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic4.png" width="22"/>Blatt mit Eselsohr</td><td>Beschreibung / Status der Klasse</td><td><kbd>Strg</kbd>+<kbd>D</kbd></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic5.png" width="22"/>Bild mit Berg und Sonne</td><td>Klassenbild zuordnen</td><td></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic6.png" width="22"/>Kästchen mit rotem Kreuz</td><td>Klasse löschen</td><td></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic7.png" width="22"/>Liste mit Punkten</td><td>Merkmale der Klasse verwalten</td><td><kbd>Strg</kbd>+<kbd>M</kbd></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic8.png" width="22"/>Buch</td><td>Merkmalkatalog</td><td><kbd>Strg</kbd>+<kbd>K</kbd></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic9.png" width="22"/>Lastwagen</td><td>Lieferanten</td><td></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic10.png" width="22"/>Mutter mit grünem Plus</td><td>Neues Teil</td><td><kbd>Strg</kbd>+<kbd>T</kbd></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic11.png" width="22"/>Tabelle mit Stift</td><td>Werte / Teil bearbeiten</td><td><kbd>Strg</kbd>+<kbd>E</kbd></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic12.png" width="22"/>Mutter mit rotem Kreuz</td><td>Teil löschen</td><td></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic13.png" width="22"/>Würfel</td><td>Solid Edge testen</td><td></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic14.png" width="22"/>Würfel mit Pfeil</td><td>Teil in Solid Edge öffnen</td><td><kbd>Strg</kbd>+<kbd>O</kbd></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic15.png" width="22"/>Würfel mit Stift</td><td>Eigenschaften nach Solid Edge schreiben</td><td></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic16.png" width="22"/>Würfel mit Plus</td><td>Teil in Baugruppe einfügen</td><td></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic17.png" width="22"/>Würfel mit Lupe</td><td>Aktuelles Solid-Edge-Dokument in PLIB zeigen</td><td><kbd>Strg</kbd>+<kbd>G</kbd></td></tr>
+<tr><td><img alt="" height="22" src="bilder/ic18.png" width="22"/>Fragezeichen</td><td>Diese Bedienungsanleitung</td><td><kbd>F1</kbd></td></tr>
+</table>
+<a name="baum"></a><h3>Der Klassenbaum</h3>
+<p>Der Baum zeigt die Klassenhierarchie. Pfeile klappen Zweige auf und zu. Ein Klick auf eine Klasse zeigt rechts ihre Teile (auch die der Unterklassen) und das Klassenbild. Jede Zeile hat die Form</p>
+<pre>10.01.01.00  SKS - Sechskantschraube  (8)   &lt;EIGEN/SKS#1&gt;</pre>
+<p>also Klassennummer, Code – Name, in Klammern die Anzahl der Teile direkt in dieser Klasse und in spitzen Klammern die Kennung. Die Kennung lässt sich über „Ansicht → Kennungen im Baum anzeigen" ausblenden.</p>
+<p align="center"><img alt="Abbildung 4" src="bilder/fig4.png" width="100%"/></p><p align="center"><i>Abbildung 4: Symbole und Farben im Klassenbaum.</i></p>
+<ul>
+<li><b>Ordnersymbol:</b> Klasse mit Unterklassen. <b>Blattsymbol:</b> Klasse ohne Unterklassen.</li>
+<li><b>Farbe:</b> <font color="#f0a830">●</font>orange = in Arbeit, <font color="#3ca046">●</font>grün = freigegeben (Text dunkelgrün), <font color="#b4b4b4">●</font>grau und durchgestrichen = veraltet.</li>
+<li><b>Hinweisfenster:</b> Bleibt die Maus kurz über einer Klasse, zeigt PLIB Nummer, Code, Name, Status, Version, Anzahl der Unterklassen und Teile und die Definition.</li>
+</ul>
+<a name="teileliste"></a><h3>Die Teileliste</h3>
+<p>Zeigt alle Teile der gewählten Klasse und ihrer Unterklassen. Die festen Spalten sind: <b>Teilenummer</b>, <b>Beschreibung</b>, <b>Hersteller</b>, <b>Klasse</b>, <b>Klassennr</b>, <b>BSU</b> und <b>CAD-Datei</b>. Danach folgt je eine Spalte für jedes Merkmal der Klasse, ihrer Oberklassen und ihrer Unterklassen. Bei Teilen, für die ein Merkmal nicht gilt, bleibt die Zelle leer.</p>
+<ul>
+<li><b>Sortieren:</b> Klick auf eine Spaltenüberschrift, zweiter Klick dreht um. Zahlen werden als Zahlen sortiert (8 vor 10).</li>
+<li><b>Spalten verschieben:</b> Eine Überschrift mit der Maus anfassen und ziehen. Die Reihenfolge wird gemerkt, auch für andere Klassen und beim nächsten Start. „Ansicht → Spaltenreihenfolge zurücksetzen" stellt die Standardreihenfolge her.</li>
+<li><b>Doppelklick</b> auf ein Teil öffnet „Werte / Teil bearbeiten".</li>
+</ul>
+<a name="werteliste"></a><h3>Tabellenspalten ein- und ausblenden</h3>
+<p>Über „Ansicht → Tabellenspalten ein-/ausblenden" bestimmst du, welche Spalten die Tabellen zeigen. Ein Haken heißt: Die Spalte wird angezeigt. Abgewählte Spalten verschwinden aus der Tabelle; die Daten bleiben erhalten.</p>
+<ul>
+<li><b>Schnell per Maus:</b> Ein Rechtsklick auf eine Überschrift der Teileliste öffnet ein Menü. Es blendet die angeklickte Spalte aus und listet alle Spalten mit Haken; ein Klick auf einen Eintrag blendet die Spalte aus oder wieder ein. Unten stehen „Alle Spalten anzeigen" und „Für diese Klasse zurücksetzen".</li>
+<li><b>Teileliste:</b> Die Einstellung gilt für die <b>im Baum gewählte Klasse und ihre Unterklassen</b>. Für eine Unterklasse kannst du eine eigene Auswahl treffen; sie hat dann Vorrang vor der der Oberklasse. „Für diese Klasse zurücksetzen" entfernt die eigene Auswahl, die Klasse übernimmt dann wieder die der Oberklasse.</li>
+<li><b>Werteliste:</b> Die Auswahl gilt für alle Teile.</li>
+<li>Die Spalte „Klasse" ist anfangs ausgeblendet, weil die Klasse im Baum steht.</li>
+<li>Die Auswahl wird gemerkt (in <code>plib.ini</code>, Abschnitte <code>[Spalten]</code> und <code>[SpaltenKlasse]</code>). „Ansicht → Spaltenreihenfolge zurücksetzen" stellt alles auf den Standard zurück.</li>
+</ul>
+<h3>Die Werteliste</h3>
+<p>Unter der Teileliste stehen die Merkmalswerte des gewählten Teils: Eigenschaft, Code, Wert, Einheit. Bei Aufzählungen wird der Name statt des Codes angezeigt. Ein Doppelklick auf eine Zeile ändert den Wert.</p>
+<a name="statusleiste"></a><h3>Die Statusleiste</h3>
+<p>Fünf Felder von links nach rechts: gewählte Klasse · Anzahl der Teile · gewähltes Teil · letzte Meldung (zum Beispiel „Teil SKS-M8x40 gelöscht") · aktuelle Datenbank.</p>
+<a name="bildfenster"></a><h3>Der Klassenbild-Bereich</h3>
+<p>Der Bereich zeigt immer das Bild der gewählten Klasse (siehe <a href="#klassenbild">Klassenbild</a>). In der Titelleiste steht, um welche Klasse es geht, unten, ob das Bild zur Klasse selbst oder zu einer Oberklasse gehört. Ein Rechtsklick auf das Bild öffnet das Menü zum Zuordnen, Entfernen und Speichern. Wie jeder Bereich lässt er sich verschieben, schweben lassen oder mit dem x in der Titelleiste schließen. „Ansicht → Bereiche" blendet ihn wieder ein.</p>
+<a name="anordnen"></a><h3>Bereiche frei anordnen</h3>
+<p>Klassenbaum, Teileliste, Werteliste und Klassenbild sind eigene Bereiche mit einer blauen <b>Titelleiste</b>. Du kannst sie beliebig umbauen, das gilt auch für die Knopfleiste. Die Anordnung wird beim Beenden in <code>plib.ini</code> gespeichert (Abschnitt <code>[Dock]</code>).</p>
+<h4>Einen Bereich umsetzen</h4>
+<ol>
+<li>Titelleiste des Bereichs mit der linken Maustaste anfassen und ziehen. Der Mauszeiger wird zum Vierfachpfeil.</li>
+<li>Beim Ziehen zeigt ein <b>blauer Rahmen</b>, wo der Bereich landen würde. Lass die Maustaste dort los.</li>
+</ol>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Du ziehst auf …</th><th align="left" bgcolor="#e8f0fb">Ergebnis</th></tr>
+<tr><td>den linken, rechten, oberen oder unteren Teil eines anderen Bereichs</td><td>Der Bereich wird dort angedockt, der andere rückt zur Seite. Der Rahmen zeigt die Hälfte, die der Bereich bekommt.</td></tr>
+<tr><td>die Mitte eines anderen Bereichs</td><td>Die beiden Bereiche tauschen die Plätze.</td></tr>
+<tr><td>den äußersten Rand des Arbeitsbereichs</td><td>Der Bereich wird über die ganze Höhe oder Breite am Rand angedockt.</td></tr>
+<tr><td>eine Stelle außerhalb des Hauptfensters</td><td>Der Bereich wird ein frei schwebendes Fenster, auch auf einem zweiten Bildschirm.</td></tr>
+</table><p align="center"><img alt="Abbildung 5" src="bilder/fig5.png" width="100%"/></p><p align="center"><i>Abbildung 5: Beim Ziehen einer Titelleiste zeigt ein blauer Rahmen, wo der Bereich landet.</i></p>
+<h4>Schwebende Bereiche wieder andocken</h4>
+<p>Ein schwebendes Fenster hat dieselbe blaue Titelleiste. Ziehe sie auf das Hauptfenster und lege den Bereich wie oben beschrieben ab. Alternativ wählst du im Menü der Titelleiste (Rechtsklick) „Am rechten Rand andocken".</p>
+<h4>Menü der Titelleiste (Rechtsklick)</h4>
+<ul>
+<li><b>Schließen:</b> blendet den Bereich aus (gleichbedeutend mit dem x). Wieder einblenden unter „Ansicht → Bereiche".</li>
+<li><b>Als schwebendes Fenster lösen:</b> macht aus dem Bereich ein eigenes Fenster an gleicher Stelle.</li>
+<li><b>Am rechten Rand andocken:</b> holt einen schwebenden Bereich zurück ins Hauptfenster.</li>
+</ul>
+<h4>Trennlinien</h4>
+<p>Zwischen angedockten Bereichen liegt je eine Trennlinie. Mit der Maus verschieben ändert die Größe der beiden Nachbarn. Wird das Fenster größer oder kleiner, bleibt das Größenverhältnis erhalten.</p>
+<h4>Knopfleiste verschieben</h4>
+<p>Fasse die Knopfleiste am Griff links (zwei Doppelpunkte auf farbigem Grund) und ziehe sie:</p>
+<ul>
+<li>An den <b>oberen, unteren, linken oder rechten Fensterrand</b>: ein blauer Streifen zeigt den neuen Platz. Am linken und rechten Rand stehen die Knöpfe in zwei Spalten.</li>
+<li><b>Aus dem Fenster heraus:</b> die Knopfleiste schwebt als eigenes Fenster, das sich in der Größe ändern lässt.</li>
+<li>Schwebend wieder andocken: Griff auf einen Fensterrand ziehen.</li>
+</ul>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"><tr><td bgcolor="#eef6ee"><b>Standard wiederherstellen</b><br/>
+„Ansicht → Fensteraufteilung zurücksetzen" setzt alle Bereiche und die Knopfleiste auf die Ausgangsanordnung zurück. Ist die Anordnung in <code>plib.ini</code> beschädigt, verwendet PLIB beim Start automatisch den Standard. Wer die Datei von Hand zurücksetzen will, löscht im Abschnitt <code>[Dock]</code> die Zeilen.</td></tr></table>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"><tr><td bgcolor="#fff5e6"><b>Grenzen</b><br/>
+Mehrere Bereiche lassen sich nicht als Reiter übereinanderlegen (wie in der Lazarus-Oberfläche). Schwebende Fenster haben keine eigenen Menütastenkürzel; die Tastenkürzel gelten, solange das Hauptfenster aktiv ist.</td></tr></table>
+<a name="kontext"></a><h3>Kontextmenüs (Rechtsklick)</h3>
+<p>Ein Rechtsklick markiert zuerst das Element unter der Maus und öffnet dann das passende Menü. Nicht passende Einträge sind ausgegraut.</p>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Wo</th><th align="left" bgcolor="#e8f0fb">Einträge</th></tr>
+<tr><td>Klassenbaum</td><td>Neue Unterklasse · Neue Hauptklasse · Klasse umbenennen · Beschreibung / Status · Übersetzung · Klassenbild zuordnen / entfernen · Merkmale der Klasse verwalten · Neues Teil in dieser Klasse · Suchbegriffe der Klasse · Alle aufklappen / zuklappen · Klasse löschen</td></tr>
+<tr><td>Teileliste</td><td>Werte / Teil bearbeiten · Neues Teil in der Klasse · In Solid Edge öffnen · In Baugruppe einfügen · CAD-Datei zuordnen / entfernen · Eigenschaften nach Solid Edge schreiben · Teilenummer kopieren · Zeile kopieren (tabulatorgetrennt, direkt in Excel einfügbar) · Teil löschen · CAD-Katalog-Link öffnen</td></tr>
+<tr><td>Werteliste</td><td>Wert ändern · Wert löschen · Wert kopieren · Alle Werte des Teils bearbeiten</td></tr>
+<tr><td>Merkmalslisten in den Dialogen</td><td>Neues Merkmal · ändern · Beschreibung / Status · Übersetzung · Aufzählungswerte · entfernen bzw. löschen · (im Katalog) der gewählten Klasse zuordnen</td></tr>
+<tr><td>Bildfenster</td><td>Bild zuordnen · Bild entfernen · Bild speichern unter</td></tr>
+</table>
+<!-- ===================================================== -->
+<a name="klassen"></a><h2>4 Klassen</h2>
+<a name="klassennummer"></a><h3>Die Klassennummer</h3>
+<p>Jede Klasse trägt eine <b>vierstufige Klassennummer</b> der Form <code>AA.BB.CC.DD</code>. Sie sagt, wo die Klasse im Baum steht: Die erste Gruppe gehört der Hauptklasse, jede weitere einer Ebene darunter. Eine nicht belegte Ebene steht als <code>00</code>.</p>
+<p align="center"><img alt="Abbildung 6" src="bilder/fig6.png" width="100%"/></p><p align="center"><i>Abbildung 6: Aufbau der Klassennummer AA.BB.CC.DD und Beispiele aus dem Startpaket</i></p>
+<ul>
+<li>Hauptklassen haben die Form <code>AA.00.00.00</code> und zählen in Zehnerschritten (10, 20, 30 …). So bleibt Platz für Einfügungen.</li>
+<li>Eine Unterklasse übernimmt die Nummer ihrer Oberklasse und belegt die nächste Ebene, zum Beispiel <code>10.01.00.00</code> unter <code>10.00.00.00</code>.</li>
+<li>Je Ebene sind die Gruppen <code>01</code> bis <code>99</code> möglich, ohne Lücken am Ende der Nummer. Tiefer als vier Ebenen geht es nicht.</li>
+<li>Die Nummer ist in der ganzen Bibliothek eindeutig. PLIB prüft das und die Verträglichkeit mit der Oberklasse, bevor es speichert.</li>
+</ul>
+<h3>Neue Klasse anlegen</h3>
+<ol>
+<li>Wähle im Baum die Oberklasse (oder keine, dann entsteht eine Hauptklasse). Über Rechtsklick in den leeren Bereich → „Neue Hauptklasse" legst du bewusst eine Hauptklasse an.</li>
+<li>Klicke auf <kbd>Strg</kbd>+<kbd>N</kbd>, den Knopf oder „Klassen → Neue Klasse".</li>
+<li>Im Dialog sind <b>Code</b>, <b>Name</b> und <b>Klassennummer</b> bereits vorbelegt. Der Cursor steht im Namensfeld. Überschreibe den Vorschlag oder bestätige ihn.</li>
+</ol>
+<ul>
+<li><b>Namensvorschlag:</b> „Name der Oberklasse – Unterklasse N" (bei Hauptklassen „Neue Klasse N"). N zählt weiter, bis der Name frei ist.</li>
+<li><b>Codevorschlag:</b> Code der Oberklasse plus zweistellige Nummer, zum Beispiel <code>SCHR01</code>.</li>
+<li><b>Klassennummer:</b> Die nächste freie Nummer auf der passenden Ebene unter der Oberklasse. Du kannst eine andere wählen, wenn sie zur Oberklasse passt und frei ist. Andernfalls nennt PLIB den Grund und einen gültigen Vorschlag.</li>
+</ul>
+<p>Der Code muss eindeutig sein. Ist er vergeben, meldet PLIB das, bevor etwas gespeichert wird.</p>
+<h3>Klasse umbenennen (F2)</h3>
+<p>Ändert Code, Name und Klassennummer. Danach fragt PLIB nach dem Lieferanten-Code und, ob die Versionsnummer erhöht werden soll. Bei einer <i>freigegebenen</i> Klasse wird die Version automatisch erhöht.</p>
+<h3>Beschreibung und Status (Strg+D)</h3>
+<p>Hier pflegst du <b>Kurzname</b>, <b>Synonyme</b> (mit Semikolon getrennt), <b>Definition</b>, <b>Anmerkung</b> und den <b>Status</b>. Ändert sich bei einer freigegebenen Klasse der Inhalt, steigt die Version automatisch. Veraltete Klassen erscheinen grau und durchgestrichen mit dem Zusatz „(veraltet)".</p>
+<h3>Suchbegriffe der Klasse</h3>
+<p>„Klassen → Suchbegriffe der Klasse" öffnet die Begriffe, an denen PLIB die Klasse erkennt (zum Beispiel „DIN933", „Sechskant", „Inbus"). Sie bestimmen, welche Klasse PLIB für ein neues Teil vorschlägt. Einzelheiten stehen in <a href="#vorschlag">Kapitel 7</a>.</p>
+<a name="klassenbild"></a><h3>Klassenbild</h3>
+<p>Jeder Klasse kann ein Bild zugeordnet werden, zum Beispiel eine bemaßte Zeichnung der Teilefamilie, auf der die Merkmale (L, SW, K …) eingetragen sind.</p>
+<ul>
+<li><b>Zuordnen:</b> Klasse wählen, dann „Klassen → Klassenbild zuordnen" oder den Knopf mit dem Bild. Möglich sind png, jpg, bmp und gif bis 10 MB. Das Bild wird in der Datenbank gespeichert und ist daher in jeder Sicherung enthalten.</li>
+<li><b>Anzeige:</b> Beim Anwählen der Klasse im Klassenbild-Bereich. Hat eine Klasse kein eigenes Bild, zeigt PLIB das der nächsten Oberklasse; der Bereich nennt, woher es stammt.</li>
+<li><b>Entfernen:</b> Nur das eigene Bild der Klasse lässt sich entfernen.</li>
+</ul>
+<h3>Übersetzung</h3>
+<p>Siehe <a href="#sprachen">Kapitel 10</a>.</p>
+<h3>Klasse löschen</h3>
+<ul>
+<li>Eine Klasse mit Unterklassen lässt sich nicht löschen. Lösche zuerst die Unterklassen.</li>
+<li>Hat sie Teile, werden diese samt Werten ebenfalls gelöscht. PLIB nennt vorher die Anzahl und fragt nach.</li>
+<li>Auch das Klassenbild wird gelöscht. Die Merkmale bleiben im Merkmalkatalog erhalten.</li>
+</ul>
+<!-- ===================================================== -->
+<a name="merkmale"></a><h2>5 Merkmale</h2>
+<h3>Merkmale einer Klasse verwalten (Strg+M)</h3>
+<p>Der Dialog listet alle Merkmale der gewählten Klasse, auch die geerbten. Geerbte tragen den Zusatz „geerbt". Zu jeder Zeile gehören Name, Einheit, Datentyp und die Kennung.</p>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Knopf</th><th align="left" bgcolor="#e8f0fb">Wirkung</th></tr>
+<tr><td>Neu</td><td>Legt ein Merkmal an und ordnet es der Klasse zu. Gibt es den Code schon, wird das vorhandene Merkmal nur zugeordnet.</td></tr>
+<tr><td>Ändern</td><td>Ändert Code, Name, Einheit und, solange noch keine Werte existieren, den Datentyp. Die Änderung gilt in allen Klassen, die das Merkmal nutzen.</td></tr>
+<tr><td>Entfernen</td><td>Nimmt ein <i>direkt</i> zugeordnetes Merkmal von der Klasse. Geerbte Merkmale entfernst du an der Oberklasse. Die zugehörigen Werte der betroffenen Teile werden gelöscht. Nutzt danach keine Klasse das Merkmal mehr, verschwindet es auch aus dem Katalog.</td></tr>
+<tr><td>Beschreibung</td><td>Kurzname, Synonyme, Definition, Anmerkung, Status.</td></tr>
+<tr><td>Übersetzung</td><td>Name und Definition in einer anderen Sprache.</td></tr>
+<tr><td>Aufzählung</td><td>Verwaltet die erlaubten Werte eines Merkmals vom Typ <code>enum</code>.</td></tr>
+</table>
+<h3>Datentypen</h3>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Typ</th><th align="left" bgcolor="#e8f0fb">Eingabe</th></tr>
+<tr><td><code>string</code></td><td>Beliebiger Text.</td></tr>
+<tr><td><code>integer</code></td><td>Ganze Zahl. PLIB prüft die Eingabe.</td></tr>
+<tr><td><code>real</code></td><td>Dezimalzahl, Komma oder Punkt. PLIB prüft die Eingabe.</td></tr>
+<tr><td><code>boolean</code></td><td>0, 1, ja, nein, true oder false.</td></tr>
+<tr><td><code>enum</code></td><td>Auswahl aus einer Liste (Aufzählung). Bei Teilen wird der Code gespeichert und der Name angezeigt.</td></tr>
+</table>
+<h3>Einheit</h3>
+<p>Beim Merkmal gibst du den Code einer Einheit aus dem Einheitenverzeichnis an (zum Beispiel <code>mm</code>). Dadurch kann PLIB umrechnen, etwa in der Suche. Eine Einheit, die nicht im Verzeichnis steht, wird als freier Text übernommen, ohne Umrechnung.</p>
+<h3>Aufzählungswerte</h3>
+<p>Für ein Merkmal vom Typ <code>enum</code> pflegst du die erlaubten Werte mit <b>Code</b> und <b>Name</b>: Neu, Ändern (ändert der Code, ziehen die Werte der Teile mit), Übersetzung, Entfernen (löscht auch alle Verwendungen bei Teilen, nach Rückfrage). Legst du ein neues <code>enum</code>-Merkmal an, öffnet sich diese Verwaltung gleich.</p>
+<a name="katalog"></a><h3>Merkmalkatalog (Strg+K)</h3>
+<p>Zeigt <i>alle</i> Merkmale der Bibliothek, jeweils mit der Zahl der Klassen, die sie nutzen.</p>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Knopf</th><th align="left" bgcolor="#e8f0fb">Wirkung</th></tr>
+<tr><td>Neu</td><td>Legt ein Merkmal im Katalog an, ohne es einer Klasse zuzuordnen.</td></tr>
+<tr><td>Ändern</td><td>Wie oben.</td></tr>
+<tr><td>Löschen</td><td>Entfernt das Merkmal aus dem Katalog, aus allen Klassen <i>und alle zugehörigen Werte</i>. PLIB nennt vorher die Zahl der betroffenen Klassen.</td></tr>
+<tr><td>Zur Klasse</td><td>Ordnet das gewählte Merkmal der Klasse zu, die vor dem Öffnen im Baum markiert war (sie steht in der Titelzeile des Dialogs).</td></tr>
+<tr><td>Beschreibung, Übersetzung, Aufzählung</td><td>Wie oben.</td></tr>
+</table>
+<h3>Merkmale zu einer Klasse hinzufügen</h3>
+<ol>
+<li><b>Neues Merkmal:</b> Klasse wählen → „Merkmale verwalten" → „Neu" → Code, Name, Datentyp, Einheit eingeben.</li>
+<li><b>Vorhandenes Merkmal:</b> Klasse wählen → „Merkmalkatalog" → Merkmal markieren → „Zur Klasse".</li>
+</ol>
+<p>Die Teile der Klasse bekommen das Merkmal sofort, die Werte sind zunächst leer und werden über „Werte bearbeiten" nachgetragen. Ein Merkmal wie „Werkstoff" hängst du am besten an die oberste passende Klasse, damit alle Unterklassen es erben.</p>
+<!-- ===================================================== -->
+<a name="teile"></a><h2>6 Teile und Werte</h2>
+<a name="teilemaske"></a><h3>Die Eingabemaske für ein Teil</h3>
+<p>Neues Teil und Bearbeiten benutzen dieselbe Maske. Sie zeigt oben die Stammdaten des Teils und darunter ein Feld für jedes Merkmal der Klasse, auch die geerbten:</p>
+<ul>
+<li><b>Teilenummer:</b> Sie wird von PLIB <b>automatisch vergeben</b>: siebenstellig und fortlaufend ab 1000001. Sie ist reine „Hausnummer" ohne Bedeutung; was ein Teil ist, sagt seine Klasse. Das Feld ist nur zum Lesen. Dadurch kann keine Nummer doppelt vorkommen, und nachträglich ändern lässt sie sich nicht.</li>
+<li><b>Beschreibung.</b></li>
+<li><b>Hersteller</b> und <b>Lieferant</b> (Auswahl aus den Stammdaten).</li>
+<li><b>CAD-Link:</b> die Adresse des Teils in einem CAD-Katalog wie 3DfindIT oder PARTcommunity. Der Knopf <b>Öffnen</b> daneben öffnet die Seite im Browser (siehe <a href="#solidedge">Kapitel 13</a>).</li>
+<li><b>Merkmale:</b> Zahlen werden geprüft (Dezimalkomma oder Punkt), Aufzählungen wählst du aus einer Liste, die Einheit steht neben dem Feld. Ein leeres Feld lässt den Wert weg.</li>
+</ul>
+<p><b>Speichern</b> legt das Teil mit allen Werten in einem Schritt an, <b>Abbrechen</b> verwirft die Eingabe.</p>
+<h3>Neues Teil (Strg+T)</h3>
+<ol>
+<li>PLIB öffnet zuerst das Fenster „Neues Teil – Klasse vorschlagen": Du gibst eine Bezeichnung (und optional den Hersteller) ein, PLIB schlägt die passende Klasse vor (siehe <a href="#vorschlag">Kapitel 7</a>).</li>
+<li>Du wählst den Vorschlag, eine andere Klasse oder legst eine neue Klasse an und klickst auf <b>Weiter zur Eingabe</b>.</li>
+<li>Die Maske erscheint mit vorbelegter Beschreibung und Hersteller. Fülle Beschreibung und Merkmale aus und speichere; die Teilenummer vergibt PLIB beim Speichern.</li>
+</ol>
+<p>Das neue Teil wird in der Teileliste markiert. Weißt du die Klasse schon, geht es schneller: Rechtsklick auf die Klasse im Baum → <b>Neues Teil in dieser Klasse</b> überspringt den Vorschlag und öffnet gleich die Maske.</p>
+<h3>Werte und Teil bearbeiten (Strg+E)</h3>
+<p>Öffnet dieselbe Maske mit den gespeicherten Daten. Ändere, was nötig ist, und speichere. Ein geleertes Merkmalfeld löscht den Wert.</p>
+<p>Einzelne Werte gehen schneller über die Werteliste: Doppelklick auf eine Zeile oder Rechtsklick → „Wert ändern".</p>
+<h3>Teilenummern umstellen</h3>
+<p>Teile mit alten, sprechenden Nummern (zum Beispiel <code>ISO4762-M3x20-A2-70</code>) stellst du einmal um: „Teile → Alte Teilenummern auf 7-stellig umstellen". Alle betroffenen Teile bekommen der Reihe nach neue Nummern; die alte Nummer bleibt nur intern erhalten und wird nicht mehr angezeigt. Zugeordnete CAD-Dateien bleiben zugeordnet, neu erzeugte Dateien heißen nach der neuen Nummer. Lege vorher eine Sicherung der Datenbank an.</p>
+<h3>Teil löschen</h3>
+<p>Markiere das Teil in der Teileliste, wähle „Teil löschen" oder drücke <kbd>Entf</kbd>. PLIB nennt die Teilenummer und löscht das Teil samt Werten nach Rückfrage. Die Markierung bleibt an der gleichen Stelle, du kannst gleich das nächste löschen. Mehrere Teile auf einmal löschen geht nicht.</p>
+<!-- ===================================================== -->
+<a name="vorschlag"></a><h2>7 Klassenvorschlag und Suchbegriffe</h2>
+<p>Bei einer großen Bibliothek ist die richtige Klasse für ein neues Teil nicht immer offensichtlich. PLIB schlägt sie deshalb vor: Aus deiner Bezeichnung zählt es <b>Punkte</b> für jede Klasse zusammen und zeigt die Klassen mit den meisten Punkten zuerst, samt Begründung.</p>
+<h3>So läuft es ab</h3>
+<p align="center"><img alt="Abbildung 7" src="bilder/fig7.png" width="100%"/></p><p align="center"><i>Abbildung 7: Das Fenster „Neues Teil – Klasse vorschlagen" mit Vorschlägen und Begründung</i></p>
+<ol>
+<li><b>Bezeichnung</b> des Teils, zum Beispiel „M6x20 DIN933 Edelstahl".</li>
+<li><b>Hersteller</b> (optional). Er zählt als zusätzlicher Hinweis.</li>
+<li><b>Klasse vorschlagen:</b> startet die Auswertung.</li>
+<li><b>Vorschläge</b> mit Klassennummer, Name und Punkten, die beste Klasse oben und vorgewählt.</li>
+<li><b>Begründung</b> zur markierten Klasse: welche Kriterien wie viele Punkte gebracht haben.</li>
+<li><b>Andere Klasse wählen:</b> Liste aller Klassen mit Nummer, falls der Vorschlag nicht passt.</li>
+<li><b>Neue Klasse anlegen:</b> gibt es die Klasse noch nicht, legst du sie gleich hier an.</li>
+<li><b>Weiter zur Eingabe:</b> öffnet die Teilemaske in der gewählten Klasse.</li>
+</ol>
+<h3>Woher die Punkte kommen</h3>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Kriterium</th><th align="left" bgcolor="#e8f0fb">Wirkung</th><th align="left" bgcolor="#e8f0fb">Standard</th></tr>
+<tr><td>Suchbegriff</td><td>Ein Suchbegriff der Klasse kommt in der Bezeichnung vor. Die Gewichtung des Begriffs (Standard 10) skaliert die Punkte.</td><td>10</td></tr>
+<tr><td>Ähnliche Artikel</td><td>Bereits angelegte Teile mit ähnlicher Beschreibung. Jedes ähnliche Teil der Klasse bringt Punkte; es zählen höchstens so viele Teile, wie die Obergrenze erlaubt.</td><td>10 je Teil, höchstens 20 Teile</td></tr>
+<tr><td>Norm</td><td>Eine Normnummer (zum Beispiel DIN933) aus der Bezeichnung stimmt mit dem Merkmal „Norm" von Teilen der Klasse überein.</td><td>20</td></tr>
+<tr><td>Werkstoff</td><td>Ein erkannter Werkstoff (zum Beispiel Edelstahl, A2, Messing) stimmt mit dem Werkstoff von Teilen der Klasse überein.</td><td>15</td></tr>
+<tr><td>Merkmalswert</td><td>Je ein Wert aus der Bezeichnung (zum Beispiel M6 oder 20), der bei Teilen der Klasse als Merkmalswert vorkommt.</td><td>5 je Wert</td></tr>
+<tr><td>Historie</td><td>Du hast für eine ähnliche Bezeichnung früher diese Klasse gewählt. PLIB lernt so aus deinen Entscheidungen.</td><td>10</td></tr>
+</table>
+<p>Die Standardwerte kannst du unter <b>Stammdaten → Punkte für den Klassenvorschlag</b> ändern. Erlaubt sind ganze Zahlen von 0 bis 1000; 0 schaltet ein Kriterium ab. Liegen mehrere Klassen dicht beieinander, zeigt die Begründung, was den Unterschied macht; entscheide dann selbst.</p>
+<h3>Suchbegriffe pflegen</h3>
+<p>Ein <b>Suchbegriff</b> ist ein Wort, an dem PLIB eine Klasse erkennt. Er gilt für genau eine Klasse und hat eine Gewichtung.</p>
+<ol>
+<li>Klasse im Baum wählen, dann <b>Klassen → Suchbegriffe der Klasse</b> (oder Rechtsklick auf die Klasse).</li>
+<li>Trage <b>einen Begriff je Zeile</b> ein, wenn nötig mit Gewichtung nach einem Semikolon (Standard 10), zum Beispiel <code>DIN933;20</code>. Häufige Schreibweisen, Normnummern und Umgangssprache sind sinnvoll (zum Beispiel „Inbus" für die Zylinderschraube mit Innensechskant).</li>
+<li>Mit OK speichern.</li>
+</ol>
+<p>Beim Import eines Klassenbaums kommen die Suchbegriffe über Zeilen mit <code>S|</code> mit (siehe <a href="#datenbank">Kapitel 11</a>).</p>
+<h3>Tipps</h3>
+<ul>
+<li>Je genauer die Bezeichnung, desto besser der Vorschlag. Normnummer und Maße helfen am meisten.</li>
+<li>Je mehr Teile schon in der Bibliothek liegen, desto besser trifft „Ähnliche Artikel".</li>
+<li>Wähle bewusst: Ein falscher, übernommener Vorschlag wird bei künftigen Teilen als „Historie" mitgezählt.</li>
+<li>Die Begründung zeigt, welcher Begriff gefehlt hat. Trage ihn als Suchbegriff nach.</li>
+</ul>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"><tr><td bgcolor="#fff5e6"><b>Grenzen</b><br/>
+Der Vorschlag ist eine Hilfe, keine Gewissheit. PLIB versteht keine Sprache, es zählt Treffer. Bezeichnungen ohne bekannte Begriffe, Normnummern oder ähnliche Teile ergeben keinen brauchbaren Vorschlag; wähle dann die Klasse von Hand.</td></tr></table>
+<!-- ===================================================== -->
+<a name="stammdaten"></a><h2>8 Lieferanten, Einheiten, Kennungen</h2>
+<h3>Lieferanten</h3>
+<p>„Stammdaten → Lieferanten" verwaltet die Herausgeber. Ein Lieferant hat Code, Name und optional die Bestandteile einer genormten Kennung: <b>ICD</b> (vierstellig, nach ISO/IEC 6523), <b>Organisations-ID</b>, <b>Organisationsteil</b> und <b>Wörterbuch-Kennung</b>.</p>
+<ul>
+<li><b>Als Standard:</b> Der Standard-Lieferant wird für alle neu angelegten Klassen, Merkmale und Teile verwendet. Beim ersten Start ist es <code>EIGEN</code> („Eigener Lieferant").</li>
+<li><b>Löschen</b> geht nur, wenn der Lieferant nirgends verwendet wird und nicht der letzte ist.</li>
+<li>Den Lieferanten einer Klasse oder eines Merkmals änderst du über „Klasse umbenennen" bzw. „Merkmal ändern", den eines Teils über „Teil bearbeiten".</li>
+</ul>
+<h3>Einheitenverzeichnis</h3>
+<p>„Stammdaten → Einheiten" enthält rund 30 vorbelegte Einheiten (Länge, Masse, Zeit, Kraft, Druck, Temperatur, Winkel, Fläche, Volumen, Drehmoment, Leistung, Spannung, Strom). Jede Einheit hat Code, Name, <b>Größenart</b>, einen <b>Faktor</b> zur SI-Basiseinheit und eine <b>Verschiebung</b> (nur für Temperaturen nötig).</p>
+<pre>Basiswert = Wert × Faktor + Verschiebung
+mm → Faktor 0,001     (1 mm = 0,001 m)
+°C → Faktor 1, Verschiebung 273,15  (0 °C = 273,15 K)</pre>
+<p>Einheiten gleicher Größenart lassen sich ineinander umrechnen. Eine Einheit löschen kannst du nur, wenn kein Merkmal sie verwendet. Ändert sich der Code einer Einheit, zeigen die Merkmale automatisch den neuen.</p>
+<h3>Kennungen</h3>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Form</th><th align="left" bgcolor="#e8f0fb">Aufbau</th><th align="left" bgcolor="#e8f0fb">Beispiel</th></tr>
+<tr><td>Kurz (Standard)</td><td>Lieferant/Code#Version</td><td><code>EIGEN/SKS#1</code></td></tr>
+<tr><td>IRDI-artig</td><td>ICD/OI/OPI//DI#Code#Version (dreistellig)</td><td><code>0112/2///61360_4#AAE867#001</code> (nur Aufbaubeispiel)</td></tr>
+</table>
+<p>Zwischen den Formen schaltest du mit „Ansicht → Kennungen als IRDI anzeigen". Teile haben keine Version, ihre Kennung lautet <code>Lieferant/Teilenummer</code>.</p>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"><tr><td bgcolor="#fff5e6"><b>Wichtig</b><br/>
+Das IRDI-Format ist an Beispiele aus ECLASS und IEC CDD angelehnt, aber nicht gegen die Norm geprüft. ICD und Organisations-ID sind bei dir frei einstellbar. Echte, weltweit gültige Kennungen setzen eine Registrierung bei der zuständigen Stelle voraus. Bis dahin sind deine Kennungen rein lokal.</td></tr></table>
+<!-- ===================================================== -->
+<a name="suche"></a><h2>9 Suche</h2>
+<p>PLIB hat zwei Suchfenster im Menü <b>Suche</b>: die <b>Teilesuche</b> für Teile und die einfache Suche für Klassen und Merkmale.</p>
+<a name="teilesuche"></a><h3>Teilesuche (Strg+F)</h3>
+<p>Das Fenster bleibt neben dem Hauptfenster offen. Du kannst weiter im Hauptfenster arbeiten und mit der Suche zurückspringen. Die Ergebnisse stammen direkt aus der Datenbank und erscheinen schon beim Tippen (nach einer kurzen Pause).</p>
+<p align="center"><img alt="Abbildung 8" src="bilder/fig8.png" width="100%"/></p><p align="center"><i>Abbildung 8: Die Teilesuche mit Suchwort, Hersteller, Merkmalfiltern und Trefferliste</i></p>
+<ol>
+<li><b>Suchen:</b> ein oder mehrere Wörter. Gesucht wird in Teilenummer, Beschreibung, Hersteller, Lieferant, Klassenname, Klassencode, Klassennummer, Merkmalwerten und den Suchbegriffen der Klasse.</li>
+<li><b>Nur in der gewählten Klasse (mit Unterklassen):</b> schränkt auf den Klassenzweig ein, der im Hauptfenster gewählt ist.</li>
+<li><b>Hersteller</b> und <b>alle Wörter müssen passen</b>. Ohne Haken wird weich gesucht: Auch Teile, die nur einen Teil der Wörter enthalten, erscheinen, die besten oben.</li>
+<li><b>Merkmalfilter:</b> drei Zeilen mit Merkmal, Vergleich und Wert.</li>
+<li><b>Zurücksetzen:</b> leert alle Felder.</li>
+<li><b>Trefferliste:</b> mit Teilenummer, Beschreibung, Klasse, Klassennummer, Hersteller, Lieferant und den Spalten der gefilterten Merkmale. Ein Rechtsklick auf eine Überschrift blendet Spalten aus und wieder ein (Haken = sichtbar); die Auswahl bleibt gespeichert.</li>
+<li><b>Rechtsklick</b> auf einen Treffer: Aktionen (siehe unten).</li>
+</ol>
+<h4>Wie gesucht wird</h4>
+<ul>
+<li><b>Groß-/Kleinschreibung und Umlaute</b> sind egal: „Länge" und „Laenge" finden dasselbe.</li>
+<li><b>Teilwörter</b> genügen: „sechskant" findet auch „Sechskantschraube".</li>
+<li><b>Weich suchen</b> (ohne Haken bei „alle Wörter müssen passen"): Treffer mit mehr passenden Wörtern stehen oben; Treffer in Teilenummer oder Hersteller zählen mehr als in der Beschreibung.</li>
+<li><b>Sortieren:</b> Klick auf eine Spaltenüberschrift, zweiter Klick dreht um.</li>
+<li>Es werden höchstens <b>500 Treffer</b> gezeigt. Bei mehr weist die Zeile unter der Liste darauf hin; dann das Suchwort oder die Filter verschärfen.</li>
+</ul>
+<h4>Merkmalfilter</h4>
+<p>Wähle in einer Zeile ein Merkmal (die Liste enthält alle Merkmale der Bibliothek), einen Vergleich und einen Wert. Mehrere Zeilen gelten gemeinsam (UND).</p>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Vergleich</th><th align="left" bgcolor="#e8f0fb">Bedeutung</th><th align="left" bgcolor="#e8f0fb">Beispiel</th></tr>
+<tr><td><code>=</code></td><td>gleich</td><td>Nenndurchmesser <code>=</code> <code>8</code></td></tr>
+<tr><td><code>&gt;</code> <code>&lt;</code></td><td>größer, kleiner</td><td>Länge <code>&gt;</code> <code>30</code></td></tr>
+<tr><td><code>&gt;=</code> <code>&lt;=</code></td><td>größer gleich, kleiner gleich</td><td>Länge <code>&lt;=</code> <code>40mm</code></td></tr>
+<tr><td>enthält</td><td>Text enthält den Wert</td><td>Werkstoff enthält <code>A2</code></td></tr>
+</table>
+<p>Bei Zahlenmerkmalen darfst du eine <b>Einheit</b> mitgeben: <code>&lt;= 40mm</code> findet auch Teile, deren Länge in Metern gespeichert ist, sofern die Einheiten gleicher Größenart sind. Dezimalkomma und Punkt gehen beide. Bei Aufzählungen genügt der Name des Werts (zum Beispiel „verzinkt").</p>
+<h4>Aktionen auf einem Treffer (Rechtsklick)</h4>
+<ul>
+<li><b>Im Hauptfenster anzeigen</b> (auch <kbd>Eingabe</kbd> oder Doppelklick): wählt Klasse und Teil im Hauptfenster.</li>
+<li><b>In Solid Edge öffnen:</b> öffnet die zugeordnete CAD-Datei.</li>
+<li><b>CAD-Katalog-Link öffnen:</b> öffnet den hinterlegten Link und beobachtet den Download (siehe <a href="#solidedge">Kapitel 13</a>).</li>
+<li><b>Teilenummer kopieren.</b></li>
+</ul>
+<h4>Beispiele</h4>
+<pre>Suchen: sechskant a2 m6               Sechskantschrauben aus A2, M6
+Hersteller: Würth + Länge &lt;= 40mm     Teile von Würth bis 40 mm Länge
+Suchen: 10.01.01                      Teile der Klassen ab Nummer 10.01.01
+Werkstoff enthält edelstahl           nur Edelstahlteile</pre>
+<a name="klassensuche"></a><h3>Klassen und Merkmale suchen</h3>
+<p>Dieses Fenster (Menü <b>Suche → Klassen und Merkmale suchen</b>) sucht in den Wörterbuchdaten. Die Trefferliste aktualisiert sich bei jedem Tastendruck. Mit den Pfeiltasten wählst du einen Treffer, <kbd>Eingabe</kbd> oder Doppelklick zeigt ihn im Hauptfenster.</p>
+<h4>Was durchsucht wird</h4>
+<ul>
+<li><b>Teile:</b> Teilenummer, Beschreibung, Klasse, alle Werte, Kennung.</li>
+<li><b>Klassen:</b> Code, Nummer, Name, Kurzname, Synonyme, Definition, Kennung.</li>
+<li><b>Merkmale:</b> Code, Name, Kurzname, Synonyme, Einheit, Kennung.</li>
+<li>Dazu alle <b>Übersetzungen</b> von Klassen und Merkmalen.</li>
+</ul>
+<h4>Wie gesucht wird</h4>
+<ul>
+<li><b>Mehrere Wörter</b> müssen alle passen (UND), auch wenn sie in verschiedenen Feldern stehen.</li>
+<li><b>Groß-/Kleinschreibung und Umlaute</b> sind egal: „Länge", „Laenge" und „LÄNGE" finden dasselbe.</li>
+<li><b>Tippfehler</b> werden bei Suchwörtern ab vier Zeichen toleriert (ein Buchstabe falsch, vertauscht oder fehlend).</li>
+<li><b>Reihenfolge der Treffer:</b> Ganze Wörter vor Wortanfängen vor Teilstücken. Treffer in Teilenummer oder Code zählen mehr als in Beschreibung oder Werten.</li>
+<li>Es werden die besten 300 Treffer gezeigt.</li>
+</ul>
+<h4>Filter auf Merkmalswerte (Schreibweise in diesem Fenster)</h4>
+<p>Ein Filter hat die Form <code>Merkmal Operator Wert</code> ohne Leerzeichen. Das Merkmal gibst du über Code oder Name an (beim Namen genügt der Anfang ab drei Zeichen).</p>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Operator</th><th align="left" bgcolor="#e8f0fb">Bedeutung</th><th align="left" bgcolor="#e8f0fb">Beispiel</th></tr>
+<tr><td><code>=</code></td><td>gleich</td><td><code>dn=8</code></td></tr>
+<tr><td><code>&gt;</code> <code>&lt;</code></td><td>größer, kleiner</td><td><code>laenge&gt;30</code></td></tr>
+<tr><td><code>&gt;=</code> <code>&lt;=</code></td><td>größer gleich, kleiner gleich</td><td><code>laenge&gt;=40</code></td></tr>
+<tr><td><code>:</code></td><td>enthält (Text)</td><td><code>werkstoff:stahl</code></td></tr>
+</table>
+<p>Wörter und Filter lassen sich kombinieren: <code>schraube dn&gt;=6 laenge&lt;50</code>. Mit einer Einheit am Wert rechnet PLIB um, wenn das Merkmal eine Einheit gleicher Größenart hat: <code>laenge&gt;=0,04m</code> findet auch ein Teil mit 40 mm.</p>
+<h4>Beispiele</h4>
+<pre>sechskant                    Klasse und Teile mit "sechskant"
+sechskantschrabe             findet trotz Tippfehler die Sechskantschraube
+10003                        die Klasse mit dieser Klassennummer
+zylinderkopf m8              Zylinderkopfschrauben M8
+festigkeitsklasse:12.9       Teile mit der Festigkeitsklasse 12.9
+dn=10 sw&gt;=17                 Nenndurchmesser 10 und Schlüsselweite ab 17</pre>
+<!-- ===================================================== -->
+<a name="sprachen"></a><h2>10 Mehrsprachigkeit</h2>
+<p>Namen und Definitionen von <b>Klassen</b>, <b>Merkmalen</b> und <b>Aufzählungswerten</b> lassen sich übersetzen.</p>
+<ol>
+<li><b>Übersetzung eintragen:</b> Bei Klassen über „Klassen → Übersetzung der Klasse". Bei Merkmalen in den Dialogen „Merkmale verwalten" oder „Merkmalkatalog" über „Übersetzung". Bei Aufzählungswerten in der Aufzählungsverwaltung.</li>
+<li>Gib einen <b>Sprachcode</b> mit 2 bis 8 Zeichen ein (zum Beispiel <code>en</code>, <code>fr</code>, <code>es</code>) und danach Name und Definition. Bleiben beide Felder leer, wird die Übersetzung gelöscht.</li>
+<li><b>Anzeigesprache wählen:</b> Globus-Knopf oder „Ansicht → Datensprache wählen". Fehlt eine Übersetzung, zeigt PLIB den Namen der Grundsprache.</li>
+</ol>
+<p>Die gewählte Sprache wirkt im Baum, in den Listen, der Werteliste und den Spaltenüberschriften der Merkmale. Die Suche findet übersetzte Namen auch dann, wenn die Grundsprache angezeigt wird.</p>
+<!-- ===================================================== -->
+<a name="datenbank"></a><h2>11 Datenbank und Sicherung</h2>
+<h3>Wo liegt die Datenbank?</h3>
+<p>Die Reihenfolge, nach der PLIB den Ort bestimmt: 1. Programmparameter, 2. Eintrag in <code>plib.ini</code>, 3. <code>plib.sqlite3</code> neben dem Programm. Ist der Ordner nicht erreichbar (zum Beispiel ein getrenntes Netzlaufwerk), fragt PLIB, ob es stattdessen die Standard-Datenbank nehmen soll.</p>
+<h3>Datenbank wechseln (Datei → Datenbank wechseln / Pfad festlegen)</h3>
+<ul>
+<li><b>Andere vorhandene Datenbank öffnen.</b></li>
+<li><b>Neue, leere Datenbank anlegen.</b> Gibt es die Datei schon, wird sie geöffnet, nie überschrieben. Bei einer leeren Datenbank fragt PLIB, ob es die Beispielklassen anlegen soll.</li>
+<li><b>Aktuelle Datenbank kopieren</b> und die Kopie verwenden (zum Umziehen der Daten).</li>
+<li><b>Zurück zum Standardort</b> neben dem Programm.</li>
+</ul>
+<p>Der Wechsel passiert sofort. Die Datenbank wird dabei geprüft und bei Bedarf auf den neuesten Stand gebracht. Lässt sie sich nicht öffnen, bleibt PLIB bei der bisherigen.</p>
+<a name="importformat"></a><h3>Textformat für den Import</h3>
+<p>„Datei → Klassenbaum aus Textdatei importieren" und „Normteile importieren" lesen UTF-8-Textdateien. Jede Zeile beginnt mit einem Kennbuchstaben, die Felder trennt ein senkrechter Strich <code>|</code>. Leere Zeilen und Zeilen mit <code>#</code> am Anfang werden übersprungen. Vorhandenes bleibt erhalten, der Import lässt sich wiederholen.</p>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Zeile</th><th align="left" bgcolor="#e8f0fb">Aufbau</th></tr>
+<tr><td><code>U</code></td><td><code>U|Code|Name|Größenart|Faktor|Verschiebung</code> – eine Einheit.</td></tr>
+<tr><td><code>P</code></td><td><code>P|Code|Name|Typ|Einheit|Aufzählung</code> – ein Merkmal. Die Aufzählung steht als <code>CODE=Name;CODE=Name</code>.</td></tr>
+<tr><td><code>D</code></td><td><code>D|Name|Code,Code,…</code> – ein benannter Merkmalssatz (Liste von Merkmalscodes), den C-Zeilen im Feld „Merkmale" verwenden können.</td></tr>
+<tr><td><code>C</code></td><td><code>C|Ebene|Code|Name|Merkmale|Definition|Klassennummer</code> – eine Klasse. Die Ebene (1 bis 4) bestimmt die Stufe im Baum; Oberklasse ist die zuletzt gelesene Klasse der Ebene darüber. Die Klassennummer darf fehlen und wird dann vergeben; passt sie nicht, vergibt PLIB eine neue und meldet das.</td></tr>
+<tr><td><code>S</code></td><td><code>S|Begriff|Klassencode|Gewichtung</code> – ein Suchbegriff für den Klassenvorschlag.</td></tr>
+<tr><td><code>T</code></td><td><code>T|Klasse|Teilenummer|Beschreibung|Merkmale|Hersteller|Link</code> – ein Teil. Die Teilenummer in der Datei wird <b>nicht</b> übernommen: PLIB vergibt eine neue Nummer und merkt sich die Nummer aus der Datei nur intern, damit ein erneuter Import das Teil nicht doppelt anlegt. Hersteller und CAD-Link dürfen fehlen.</td></tr>
+</table>
+<h3>Datenbank leeren</h3>
+<p><b>Datei → Datenbank leeren</b> löscht alle Klassen, Merkmale, Teile, Werte, Klassenbilder, Übersetzungen, Suchbegriffe und den Verlauf des Klassenvorschlags. Lieferanten, Einheiten und die Punkte des Klassenvorschlags bleiben. PLIB fragt zweimal nach; es gibt kein Zurück außer über eine Sicherung.</p>
+<h3>Sicherungen (SQLite)</h3>
+<ul>
+<li><b>Automatisch:</b> Bei jedem Start prüft PLIB die Datenbank und legt eine Sicherung im Ordner <code>backup</code> neben der Datenbank an. Die letzten 20 bleiben erhalten. Der Dateiname enthält Datum und Uhrzeit, zum Beispiel <code>plib_20261027_143012.sqlite3</code>.</li>
+<li><b>Von Hand:</b> „Datei → Datenbank sichern" legt eine Kopie im Ordner der Datenbank ab.</li>
+<li><b>Prüfen:</b> „Datei → Datenbank prüfen".</li>
+<li><b>Wiederherstellen:</b> „Datei → Sicherung wiederherstellen" zeigt alle Sicherungen, die neueste zuerst. Die bisherige Datenbank bleibt als <code>*.defekt_…</code> erhalten.</li>
+<li><b>Absturzerkennung:</b> Beim Start legt PLIB die Datei <code>plib.session</code> an und löscht sie beim normalen Beenden. Bleibt sie liegen, war der letzte Lauf ein Absturz; PLIB prüft dann die Datenbank. Findet es einen Schaden, bietet es die letzte Sicherung an.</li>
+</ul>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"><tr><td bgcolor="#eef6ee"><b>Daten gehen kaum verloren</b><br/>
+Jede Änderung wird sofort in die Datenbank geschrieben. Bei einem Absturz gehen höchstens Eingaben verloren, die du gerade in einem offenen Dialog gemacht hast.</td></tr></table>
+<!-- ===================================================== -->
+<a name="postgres"></a><h2>12 PostgreSQL auf dem NAS (mehrere Rechner)</h2>
+<p>Statt der SQLite-Datei kann PLIB mit einem PostgreSQL-Server arbeiten, zum Beispiel auf einem Synology-NAS. Dann können mehrere Rechner (PC, später Mac) dieselbe Bibliothek nutzen.</p>
+<p align="center"><img alt="Abbildung 9" src="bilder/fig9.png" width="100%"/></p><p align="center"><i>Abbildung 9: Aufbau mit PostgreSQL auf dem NAS. Ohne Server arbeitet PLIB mit einer SQLite-Datei auf dem eigenen Rechner. Die Verbindung bleibt im Heimnetz, es wird nichts im Router freigegeben.</i></p>
+<h3>Voraussetzungen</h3>
+<ul>
+<li>Ein laufender PostgreSQL-Server (Container <code>postgres:17</code> auf dem NAS), eine Datenbank <code>plib</code> und ein Benutzer <code>plib_user</code>, dem die Datenbank gehört.</li>
+<li>Die Datei <code>libpq.dll</code> samt den zugehörigen <code>lib*.dll</code>-Dateien neben der <code>plib.exe</code>. Du findest sie im Ordner <code>runtime</code> der pgAdmin-4-Installation (<code>C:\Program Files\pgAdmin 4\runtime</code>). Beide Programme müssen 64 Bit sein.</li>
+<li>Auf dem NAS muss die Firewall den Port (im Beispiel 5433) für dein Heimnetz erlauben. Richte keine Portweiterleitung im Router ein.</li>
+</ul>
+<h3>Verbinden</h3>
+<ol>
+<li>„Datei → Mit PostgreSQL-Server verbinden".</li>
+<li>Trage ein: Server (IP-Adresse oder Name des NAS), Port, Datenbank, Benutzer, Passwort.</li>
+<li>Das Häkchen <b>„Passwort speichern"</b> legt das Passwort <b>verschlüsselt</b> in <code>plib.ini</code> ab (mit Windows-Benutzerverschlüsselung, es lässt sich nur unter deinem Windows-Konto und auf diesem Rechner wieder entschlüsseln; ein bisher im Klartext gespeichertes Passwort wird beim nächsten Speichern ersetzt). Ohne Häkchen fragt PLIB bei jedem Start danach.</li>
+<li>PLIB testet die Verbindung. Klappt sie, speichert es die Einstellungen und beendet sich. Starte es neu; Titelzeile und Statusleiste zeigen dann „PostgreSQL".</li>
+</ol>
+<h3>Vorhandene Daten übernehmen</h3>
+<p>„Datei → Daten aus SQLite-Datei nach PostgreSQL übernehmen": Wähle deine bisherige <code>plib.sqlite3</code>. <b>Alle Daten auf dem Server werden dabei gelöscht und ersetzt.</b> PLIB kopiert alle Tabellen samt Bildern in einem Schritt. Geht etwas schief, wird nichts verändert. Öffne die SQLite-Datei vorher einmal mit der aktuellen Programmversion, damit sie auf dem neuesten Stand ist.</p>
+<h3>Zurück zu SQLite</h3>
+<p>„Datei → Datenbank wechseln" bietet das an (mit Neustart). Startet PLIB gar nicht mehr, setze in <code>plib.ini</code> unter <code>[Datenbank]</code> die Zeile <code>Typ=sqlite</code>, oder starte das Programm mit einem Dateipfad als Parameter.</p>
+<h3>Sicherung bei PostgreSQL</h3>
+<p>Die Dateisicherungen von PLIB gibt es bei PostgreSQL nicht. Der Server wird auf dem NAS gesichert, am besten mit <b>Hyper Backup</b> auf den Datenordner (<code>docker/postgres</code>) und zusätzlich mit einem täglichen <code>pg_dump</code>, weil eine laufende Datenbank beim Kopieren der Dateien nicht immer sauber gesichert wird.</p>
+<!-- ===================================================== -->
+<a name="solidedge"></a><h2>13 Solid Edge und CAD-Kataloge</h2>
+<p>PLIB kann Solid Edge (getestet mit Solid Edge 2026) über die COM-Automatisierung steuern. Das geht nur unter Windows. Bei der Community Edition ist nur die nicht-kommerzielle Nutzung erlaubt. Dazu kommt die Anbindung an CAD-Kataloge im Internet: PLIB speichert den Link zum Modell eines Teils und übernimmt die heruntergeladene Datei.</p>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"><tr><td bgcolor="#fff5e6"><b>Beim Start aus Lazarus</b><br/>
+Der Debugger hält bei Fehlern von Solid Edge mit „Break" an, auch wenn PLIB sie abfängt. Klicke „Continue" und setze den Haken „Diesen Ausnahmetyp übergehen", oder starte <code>plib.exe</code> direkt per Doppelklick.</td></tr></table>
+<h3>Verbindung testen</h3>
+<p>Der Würfel-Knopf oder „Solid Edge → Verbindung testen" sucht eine laufende Solid-Edge-Sitzung, startet sonst Solid Edge und zeigt Name, Version, Zahl der offenen Dokumente und das aktive Dokument.</p>
+<p align="center"><img alt="Abbildung 10" src="bilder/fig10.png" width="100%"/></p><p align="center"><i>Abbildung 10: Meldung des Verbindungstests bei laufendem Solid Edge (hier ohne geöffnetes Dokument).</i></p>
+<h3>Basisordner für CAD-Dateien</h3>
+<p>Mit „Solid Edge → Basisordner für CAD-Dateien festlegen" wählst du den Ordner, unter dem deine CAD-Dateien liegen. Dateien darunter werden mit relativem Pfad gespeichert, sodass die Zuordnungen auch auf einem anderen Rechner passen, auf dem derselbe Ordner anders eingebunden ist (dort den Basisordner entsprechend einstellen). Bereits gespeicherte absolute Pfade bleiben unverändert.</p>
+<a name="cadlink"></a><h3>CAD-Katalog-Link (3DfindIT / PARTcommunity)</h3>
+<p>Viele Hersteller stellen ihre Teile als 3D-Modelle in CAD-Katalogen bereit, etwa über <b>3DfindIT</b> oder <b>PARTcommunity</b>. PLIB lädt die Modelle nicht selbst herunter, merkt sich aber den Weg dorthin und nimmt die heruntergeladene Datei danach automatisch auf:</p>
+<ol>
+<li>Suche das Teil im Katalog (im Browser) und kopiere die Adresse der Teileseite.</li>
+<li>Trage sie in PLIB beim Teil im Feld <b>CAD-Link</b> ein (Werte / Teil bearbeiten, <kbd>Strg</kbd>+<kbd>E</kbd>). Auch ein Link ohne <code>https://</code> wird angenommen; geöffnet werden nur <code>http</code>- und <code>https</code>-Adressen.</li>
+<li>Markiere das Teil und wähle <b>Teile → CAD-Katalog-Link öffnen</b> (oder Rechtsklick in der Teileliste, oder in der Teilesuche). Der Browser öffnet die Seite, PLIB beginnt zu beobachten.</li>
+<li>Lade im Katalog das Modell im Format deiner CAD-Anwendung herunter (für Solid Edge zum Beispiel STEP oder das Solid-Edge-Format).</li>
+<li>PLIB erkennt die neue Datei im Download-Ordner, entpackt sie bei einer ZIP-Datei und fragt: „Dem Teil … zuordnen?". Mit <b>Ja</b> wird die Datei in den Katalogordner kopiert und dem Teil als CAD-Datei zugeordnet.</li>
+<li>Ab jetzt öffnet <kbd>Strg</kbd>+<kbd>O</kbd> das Modell in Solid Edge.</li>
+</ol>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"><tr><td bgcolor="#eef6ee"><b>Wo landet die Datei?</b><br/>
+Im Unterordner <code>Katalog</code> deines Basisordners für CAD-Dateien. Ist kein Basisordner eingestellt, legt PLIB den Ordner <code>PLIB_CAD</code> im Download-Ordner an. Gibt es schon eine Datei gleichen Namens, fragt PLIB vor dem Überschreiben.</td></tr></table>
+<a name="downloadordner"></a><h3>Download-Ordner festlegen</h3>
+<p>Mit <b>Solid Edge → Download-Ordner für CAD-Kataloge festlegen</b> wählst du den Ordner, in den dein Browser Downloads speichert. Ohne Einstellung nimmt PLIB den Ordner „Downloads" in deinem Benutzerordner. Gemerkt wird die Wahl in <code>plib.ini</code> (Abschnitt <code>[SolidEdge]</code>, Eintrag <code>Downloadordner</code>).</p>
+<ul>
+<li>PLIB prüft etwa alle zwei Sekunden auf neue Dateien (CAD-Formate und ZIP) und wartet, bis der Download abgeschlossen ist.</li>
+<li>Nach etwa zehn Minuten ohne neue Datei beendet PLIB die Beobachtung („keine neue CAD-Datei gefunden"). Dann einfach den Link erneut öffnen.</li>
+<li>Dateien, die schon vor dem Öffnen des Links im Ordner lagen, werden ignoriert.</li>
+</ul>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"><tr><td bgcolor="#fff5e6"><b>Wenn nichts passiert</b><br/>
+Prüfe, ob der Download-Ordner stimmt (viele Browser fragen für jede Datei nach dem Speicherort) und ob der Katalog das Modell als Datei oder ZIP liefert. Manche Kataloge verlangen eine Anmeldung. Die Zuordnung per „CAD-Datei zuordnen" bleibt in jedem Fall möglich.</td></tr></table>
+<a name="se-plugin"></a><h3>Hinweis: Solid-Edge-Plugin der Kataloge</h3>
+<p>Die Katalogbetreiber bieten auch Plugins für Solid Edge an, mit denen man Modelle direkt aus Solid Edge heraus sucht und einfügt. PLIB braucht dieses Plugin nicht, ergänzt es aber: PLIB hält Teilenummer, Klasse und Merkmale, der Katalog liefert die Geometrie.</p>
+<h3 id="teilevorlage">Teilevorlage für STEP-Dateien</h3>
+<p>Öffnet PLIB eine STEP- oder IGES-Datei in Solid Edge, braucht es eine <b>leere Teilevorlage</b> (<code>.par</code> ohne Körper), damit Solid Edge nicht jedes Mal nach „Teil oder Baugruppe" fragt. PLIB sucht dafür automatisch <code>din metric part.par</code> oder <code>iso metric part.par</code> im Template-Ordner von Solid Edge (zum Beispiel <code>C:\Program Files\Siemens\Solid Edge 2026\Template</code>). Findet es nichts, fragt es einmal nach. Die Wahl steht danach in <code>plib.ini</code> unter <code>[SolidEdge]</code> als <code>VorlageTeil=</code>.</p>
+<p><b>Wichtig:</b> Wähle nur eine echte Vorlage, nie ein fertiges Teil. Sonst erscheint dessen Körper in jedem neuen Teil. Zum Zurücksetzen löschst du die Zeile <code>VorlageTeil=</code> aus <code>plib.ini</code>.</p>
+<h3 id="plugins">Plugins: STEP-Modelle erzeugen (SolidCraft)</h3>
+<p>Plugins im Ordner <code>plugins</code> erzeugen aus den Merkmalswerten eines Teils ein 3D-Modell. Das mitgelieferte Plugin <b>„STEP-Modell erzeugen (SolidCraft)"</b> baut Normteile als STEP-Datei, zum Beispiel Zylinderschrauben (ISO 4762), Senk- und Linsenschrauben, Unterlegscheiben, Gewindestifte (ISO 4026 bis 4029), Stifte und Schlüsselschrauben. Welche Klassen es kann, steht in <code>plugins\solidcraft_step\plugin.ini</code>. Es braucht den Programmteil SolidCraft (<code>solidcraft-cli.exe</code>); den Pfad trägst du in derselben Datei unter <code>[SolidCraft]</code> bei <code>Cli=</code> ein.</p>
+<ol>
+<li>Basisordner für CAD-Dateien festlegen (Menü „Solid Edge"), falls noch nicht geschehen.</li>
+<li>Teil in der Teileliste wählen, dessen Klasse das Plugin kann.</li>
+<li>Menü „Plugins" (oder Rechtsklick auf das Teil) → „STEP-Modell erzeugen (SolidCraft)".</li>
+<li>PLIB legt die Datei als <code>Katalog\&lt;Beschreibung&gt; #&lt;Teilenummer&gt;.step</code> (z. B. <code>Sechskantschraube ISO 4017 M3x10 8.8 #1000001.step</code>) im Basisordner ab und ordnet sie dem Teil zu. Gibt es die Datei schon, fragt PLIB, ob sie neu erzeugt werden soll.</li>
+<li>Beim nächsten „Teil in Solid Edge öffnen" entsteht aus der STEP-Datei mit der Teilevorlage ein Solid-Edge-Teil (<code>.par</code>), das neben der STEP-Datei gespeichert wird. Wird die STEP-Datei neu erzeugt, legt PLIB das alte <code>.par</code> in den Unterordner <code>alt</code>.</li>
+</ol>
+<p>PLIB übernimmt nur die Datei, die es selbst angefordert hat. Plugins laufen als eigene Programme und sehen nur die Daten dieses einen Teils.</p>
+<h3>CAD-Datei zuordnen und öffnen</h3>
+<ul>
+<li><b>Zuordnen:</b> Teil markieren, „Solid Edge → CAD-Datei zuordnen" (oder Rechtsklick). Möglich sind <code>.par</code>, <code>.asm</code>, <code>.psm</code>, <code>.dft</code>. Die Teileliste zeigt den Dateinamen in der Spalte „CAD-Datei".</li>
+<li><b>Öffnen</b> (<kbd>Strg</kbd>+<kbd>O</kbd>): Lädt die Datei in Solid Edge, startet es bei Bedarf, und holt sie nach vorn, wenn sie schon offen ist.</li>
+<li><b>Entfernen:</b> löscht nur die Zuordnung, nicht die Datei.</li>
+</ul>
+<h3>Eigenschaften nach Solid Edge schreiben</h3>
+<p>Schreibt in die CAD-Datei des gewählten Teils folgende <b>benutzerdefinierte Eigenschaften</b> und speichert sie:</p>
+<pre>PLIB_Teilenummer   PLIB_Benennung       PLIB_Klasse
+PLIB_Klassennummer PLIB_Klassencode     PLIB_Lieferant
+PLIB_Lieferantenname  PLIB_BSU
+PLIB_&lt;Code&gt;  für jeden Merkmalswert, zum Beispiel PLIB_L für die Länge</pre>
+<p>Zusätzlich versucht PLIB, die Standardeigenschaften <i>Titel</i> (aus der Benennung) und <i>Dokumentnummer</i> (aus der Teilenummer) zu setzen; welche geklappt haben, steht in der Meldung. Die Eigenschaften lassen sich in Solid Edge in Stücklisten und Zeichnungsköpfen verwenden. Ist die Datei schreibgeschützt, kann PLIB nicht speichern und sagt es.</p>
+<h3>Teil in Baugruppe einfügen</h3>
+<p>Fügt die CAD-Datei des gewählten Teils in die aktive Solid-Edge-Baugruppe ein. Das Teil kommt zunächst an den Ursprung; positioniere es in Solid Edge. Ist das aktive Dokument keine Baugruppe, meldet PLIB das.</p>
+<h3>Aktuelles Solid-Edge-Dokument in PLIB zeigen (Strg+G)</h3>
+<p>PLIB fragt das aktive Dokument ab und sucht das passende Teil:</p>
+<ol>
+<li>über den gespeicherten Dateipfad,</li>
+<li>sonst über die Eigenschaft <code>PLIB_Teilenummer</code> in der Datei (auch wenn die Datei verschoben wurde; PLIB bietet an, die Zuordnung zu aktualisieren),</li>
+<li>sonst bietet PLIB an, das Dokument dem in PLIB gewählten Teil zuzuordnen.</li>
+</ol>
+<!-- ===================================================== -->
+<a name="tasten"></a><h2>14 Tastatur und Maus</h2>
+<h3>Tastenkürzel im Hauptfenster</h3>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Taste</th><th align="left" bgcolor="#e8f0fb">Wirkung</th></tr>
+<tr><td><kbd>F1</kbd></td><td>Bedienungsanleitung</td></tr>
+<tr><td><kbd>F2</kbd></td><td>Klasse umbenennen</td></tr>
+<tr><td><kbd>F5</kbd></td><td>Aktualisieren</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>F</kbd></td><td>Teilesuche</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>N</kbd></td><td>Neue Klasse</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>D</kbd></td><td>Beschreibung / Status der Klasse</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>M</kbd></td><td>Merkmale der Klasse verwalten</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>K</kbd></td><td>Merkmalkatalog</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>T</kbd></td><td>Neues Teil</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>E</kbd></td><td>Werte / Teil bearbeiten</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>O</kbd></td><td>Teil in Solid Edge öffnen</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>G</kbd></td><td>Aktuelles Solid-Edge-Dokument in PLIB zeigen</td></tr>
+</table>
+<p>Löschbefehle haben bewusst kein Tastenkürzel im Menü, damit nichts versehentlich verschwindet.</p>
+<h3>Tasten in den Bereichen</h3>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Bereich</th><th align="left" bgcolor="#e8f0fb">Taste</th><th align="left" bgcolor="#e8f0fb">Wirkung</th></tr>
+<tr><td rowspan="3">Klassenbaum</td><td><kbd>Einfg</kbd></td><td>Neue Klasse</td></tr>
+<tr><td><kbd>Entf</kbd></td><td>Klasse löschen (mit Rückfrage)</td></tr>
+<tr><td><kbd>Eingabe</kbd></td><td>Wechsel in die Teileliste</td></tr>
+<tr><td rowspan="4">Teileliste</td><td><kbd>Einfg</kbd></td><td>Neues Teil</td></tr>
+<tr><td><kbd>Entf</kbd></td><td>Teil löschen (mit Rückfrage)</td></tr>
+<tr><td><kbd>Eingabe</kbd></td><td>Werte / Teil bearbeiten</td></tr>
+<tr><td><kbd>Esc</kbd></td><td>Zurück zum Baum</td></tr>
+<tr><td rowspan="2">Werteliste</td><td><kbd>Eingabe</kbd></td><td>Wert ändern</td></tr>
+<tr><td><kbd>Esc</kbd></td><td>Zurück zur Teileliste</td></tr>
+<tr><td rowspan="5">Teilesuche</td><td>(Tippen)</td><td>Suche startet nach kurzer Pause von selbst</td></tr>
+<tr><td><kbd>Eingabe</kbd> im Suchfeld</td><td>sofort suchen</td></tr>
+<tr><td><kbd>↓</kbd></td><td>vom Suchfeld in die Trefferliste</td></tr>
+<tr><td><kbd>Eingabe</kbd> in der Liste</td><td>Treffer im Hauptfenster zeigen</td></tr>
+<tr><td><kbd>Esc</kbd></td><td>Fenster schließen</td></tr>
+<tr><td rowspan="3">Anleitung (Programm)</td><td><kbd>Eingabe</kbd></td><td>im Suchfeld: nächsten Treffer suchen</td></tr>
+<tr><td><kbd>F3</kbd></td><td>nächster Treffer</td></tr>
+<tr><td><kbd>Umschalt</kbd>+<kbd>F3</kbd></td><td>vorheriger Treffer</td></tr>
+<tr><td rowspan="3">Anleitung (Browser)</td><td><kbd>/</kbd></td><td>springt ins Suchfeld</td></tr>
+<tr><td><kbd>Eingabe</kbd></td><td>öffnet den ersten Treffer</td></tr>
+<tr><td><kbd>Esc</kbd></td><td>leert die Suche</td></tr>
+<tr><td rowspan="2">Suche in Klassen und Merkmalen</td><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Treffer wählen</td></tr>
+<tr><td><kbd>Eingabe</kbd></td><td>Treffer im Hauptfenster zeigen</td></tr>
+</table>
+<h3>Maus</h3>
+<ul>
+<li><b>Rechtsklick:</b> Kontextmenü (siehe <a href="#kontext">Kapitel 3</a>).</li>
+<li><b>Doppelklick</b> auf eine Zeile der Teileliste: Werte / Teil bearbeiten. Auf eine Zeile der Werteliste: Wert ändern.</li>
+<li><b>Klick auf Spaltenüberschrift:</b> sortieren. <b>Ziehen</b> der Überschrift: Spalte verschieben.</li>
+<li><b>Ziehen der Trennlinien:</b> Aufteilung ändern.</li>
+<li><b>Ziehen einer Titelleiste:</b> Bereich umsetzen, tauschen oder schweben lassen. <b>Ziehen des Knopfleistengriffs:</b> Knopfleiste verschieben.</li>
+<li><b>Maus ruhen lassen</b> über einem Knopf oder einer Klasse: Hinweisfenster.</li>
+</ul>
+<!-- ===================================================== -->
+<a name="fehler"></a><h2>15 Fehler und Hilfe</h2>
+<h3>Wie PLIB mit Fehlern umgeht</h3>
+<ul>
+<li><b>Verständliche Meldungen:</b> Typische Probleme erklärt PLIB in Klartext (zum Beispiel „Code schon vergeben", „Datenbank gesperrt", „Benutzername oder Passwort falsch"). Der technische Text steht in Klammern dahinter.</li>
+<li><b>Fehlerprotokoll:</b> Jeder Fehler wird mit Uhrzeit in <code>plib_error.log</code> neben dem Programm protokolliert. „Hilfe → Fehlerprotokoll anzeigen" öffnet die Datei.</li>
+<li><b>Schwere Fehler:</b> Bei Speicherfehlern empfiehlt PLIB das Beenden und Neustarten. Meldet das Programm in kurzer Zeit wiederholt Fehler, beendet es sich selbst.</li>
+<li><b>Startfehler:</b> Lässt sich die Datenbank nicht öffnen, nennt PLIB die wahrscheinlichen Ursachen und beendet sich sauber.</li>
+</ul>
+<p align="center"><img alt="Abbildung 11" src="bilder/fig11.png" width="100%"/></p><p align="center"><i>Abbildung 11: Diese Meldung stammt vom Lazarus-Debugger („Break" / „Continue"), nicht von PLIB. „Continue" klicken und „Diesen Ausnahmetyp übergehen" ankreuzen, oder plib.exe direkt starten.</i></p>
+<a name="anleitung-nutzen"></a><h3>Diese Anleitung benutzen und durchsuchen</h3>
+<p>Die Anleitung gibt es in zwei Formen mit demselben Inhalt:</p>
+<ul>
+<li><b>Im Programm</b> (<kbd>F1</kbd> oder Hilfe → Bedienungsanleitung): als Bereich im Hauptfenster, wie die anderen Bereiche verschiebbar. Oben steht ein <b>Suchfeld</b>: Suchwort eingeben, <kbd>Eingabe</kbd> oder <b>Suchen</b> springt zum ersten Treffer, <b>Weiter</b> (oder <kbd>F3</kbd>) zum nächsten, <b>Zurück</b> (oder <kbd>Umschalt</kbd>+<kbd>F3</kbd>) zum vorigen. Am Ende beginnt die Suche wieder oben.</li>
+<li><b>Im Browser</b> (Hilfe → Anleitung im Browser öffnen, Datei <code>plib_hilfe.html</code>): mit Inhaltsverzeichnis links und einer <b>Volltextsuche</b> darüber. Während du tippst, erscheinen die passenden Abschnitte mit Textauszug; ein Klick springt hin und markiert die Fundstellen. Mehrere Wörter müssen alle vorkommen, Groß-/Kleinschreibung und Umlaute spielen keine Rolle („laenge" findet „Länge"). Mit <kbd>/</kbd> springst du ins Suchfeld, <kbd>Esc</kbd> leert die Suche.</li>
+</ul>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"><tr><td bgcolor="#eef6ee"><b>Gut zu wissen</b><br/>
+Die Anleitung im Programm liegt als Datei <code>hilfe\hilfe.html</code> neben der <code>plib.exe</code>, die Browserfassung als <code>plib_hilfe.html</code>. Beide Dateien müssen dort liegen, sonst bleibt der Bereich leer bzw. F1 meldet das.</td></tr></table>
+<a name="ueber"></a><h3>Version und Copyright (Hilfe → Über)</h3>
+<p>Das Fenster „Über PLIB" zeigt Programmname, <b>Versionsnummer</b> mit Build-Datum, den Entwickler (Frank Mergl), den Copyright-Hinweis, einen Hinweis zur Nutzung ohne Gewähr und die aktuell geöffnete Datenbank. Nenne bei Fragen oder Fehlermeldungen bitte die Versionsnummer.</p>
+<h3>Häufige Probleme</h3>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Problem</th><th align="left" bgcolor="#e8f0fb">Ursache und Lösung</th></tr>
+<tr><td>Programm startet nicht, Meldung zur SQLite-Bibliothek</td><td><code>sqlite3.dll</code> fehlt oder passt nicht zur Bitzahl (64 Bit). Datei neben <code>plib.exe</code> legen.</td></tr>
+<tr><td>„libpq.dll wurde nicht gefunden"</td><td>Nur bei PostgreSQL. <code>libpq.dll</code> und alle <code>lib*.dll</code> aus dem <code>runtime</code>-Ordner von pgAdmin 4 neben die <code>plib.exe</code> kopieren. Programm vollständig neu starten.</td></tr>
+<tr><td>„Server nicht erreichbar" bei PostgreSQL</td><td>Läuft der Container? Stimmen IP-Adresse und Port? Erlaubt die NAS-Firewall den Port? Test in PowerShell: <code>Test-NetConnection IP -Port 5433</code>.</td></tr>
+<tr><td>„Benutzername oder Passwort sind falsch"</td><td>Passwort prüfen, und ob der Benutzer <code>plib_user</code> angelegt ist.</td></tr>
+<tr><td>PLIB startet nicht mehr nach der Umstellung auf PostgreSQL</td><td>In <code>plib.ini</code> unter <code>[Datenbank]</code> <code>Typ=sqlite</code> eintragen.</td></tr>
+<tr><td>Beim Öffnen einer STEP-Datei erscheint ein fremder Körper im neuen Teil</td><td>Als Teilevorlage ist ein fertiges Teil eingetragen. In <code>plib.ini</code> die Zeile <code>VorlageTeil=</code> löschen; PLIB nimmt dann die Solid-Edge-Vorlage.</td></tr>
+<tr><td>Nach dem Wechsel des Designs sind Menüs noch in der alten Farbe</td><td>PLIB neu starten (die Abfrage erscheint nach dem Umschalten).</td></tr>
+<tr><td>Schrift oder Symbole unscharf auf einem 4K-Monitor</td><td>„Ansicht → Anzeige-Info" prüfen: „Prozess DPI-bewusst: ja" muss dort stehen. Sonst in <code>plib.ini</code> bei <code>[Ansicht]</code> <code>Hochaufloesend=ja</code> eintragen.</td></tr>
+<tr><td>Beim Start aus Lazarus erscheint „Break"</td><td>Das ist der Debugger, nicht PLIB. „Continue" klicken, den Haken „Diesen Ausnahmetyp übergehen" setzen, oder <code>plib.exe</code> direkt starten.</td></tr>
+<tr><td>Teile oder Merkmale sind „weg"</td><td>Eine andere Datenbank ist aktiv. Statusleiste und Titelzeile zeigen sie. „Datei → Datenbank wechseln" führt zurück.</td></tr>
+<tr><td>Ein Merkmal erscheint nicht in der Teileliste</td><td>Es muss der Klasse (oder einer Ober- oder Unterklasse) zugeordnet sein.</td></tr>
+<tr><td>Ein Code oder eine Nummer wird abgelehnt</td><td>Erlaubt sind Buchstaben, Ziffern, <code>-</code> <code>_</code> <code>.</code>, höchstens 40 Zeichen. Der Code muss eindeutig sein. Die Klassennummer hat die Form <code>AA.BB.CC.DD</code>.</td></tr>
+<tr><td>Die Klassennummer wird abgelehnt</td><td>Sie muss die Form <code>AA.BB.CC.DD</code> haben (Zweiergruppen mit Punkten), zur Oberklasse passen (dieselben vorderen Gruppen, nächste Ebene belegt) und frei sein. PLIB nennt in der Meldung einen gültigen Vorschlag.</td></tr>
+<tr><td>Der Klassenvorschlag ist falsch oder leer</td><td>Bezeichnung genauer fassen (Norm, Maße, Werkstoff) und fehlende Begriffe unter „Klassen → Suchbegriffe der Klasse" nachtragen. Siehe <a href="#vorschlag">Kapitel 7</a>.</td></tr>
+<tr><td>Die Teilesuche findet ein Teil nicht</td><td>Haken „alle Wörter müssen passen" abschalten (weiche Suche), Filter prüfen und „nur in der gewählten Klasse" abwählen. Bei mehr als 500 Treffern wird gekürzt.</td></tr>
+<tr><td>Nach dem CAD-Katalog-Link wird keine Datei übernommen</td><td>Download-Ordner prüfen (Solid Edge → Download-Ordner festlegen), Link erneut öffnen und den Download neu starten. Siehe <a href="#downloadordner">Download-Ordner festlegen</a>.</td></tr>
+<tr><td>F1 zeigt eine leere Anleitung</td><td>Die Datei <code>hilfe\hilfe.html</code> fehlt neben der <code>plib.exe</code>. Über „Hilfe → Anleitung im Browser öffnen" geht <code>plib_hilfe.html</code>.</td></tr>
+<tr><td>Solid-Edge-Verbindung schlägt fehl</td><td>Solid Edge nicht installiert oder nicht registriert (einmal als Administrator starten oder reparieren). „Zugriff verweigert": PLIB und Solid Edge mit denselben Rechten starten.</td></tr>
+</table>
+<!-- ===================================================== -->
+<a name="dateien"></a><h2>16 Dateien und Ordner</h2>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Datei / Ordner</th><th align="left" bgcolor="#e8f0fb">Inhalt</th></tr>
+<tr><td><code>plib.exe</code></td><td>Das Programm</td></tr>
+<tr><td><code>plib_hilfe.html</code></td><td>Diese Anleitung für den Browser</td></tr>
+<tr><td><code>hilfe\hilfe.html</code> und <code>hilfe\bilder\</code></td><td>Die Anleitung für den Bereich im Programm, mit ihren Abbildungen</td></tr>
+<tr><td><code>modellbau_klassenbaum.txt</code>, <code>normteile.txt</code></td><td>Importdateien für Klassenbaum (mit Suchbegriffen) und Normteile</td></tr>
+<tr><td><code>klassenbilder\</code></td><td>Bilder für den Klassenbilder-Import (Dateiname = Klassencode)</td></tr>
+<tr><td>Katalogordner <code>Katalog\</code></td><td>Von PLIB übernommene CAD-Dateien aus Downloads (im Basisordner für CAD-Dateien)</td></tr>
+<tr><td><code>plugins\</code></td><td>Plugins (je Plugin ein Unterordner mit <code>plugin.ini</code> und Programm)</td></tr>
+<tr><td><code>fonts\</code></td><td>Optional: Schrift IBM Plex Sans für PLIB</td></tr>
+<tr><td><code>sqlite3.dll</code></td><td>SQLite-Bibliothek</td></tr>
+<tr><td><code>libpq.dll</code>, <code>lib*.dll</code></td><td>PostgreSQL-Bibliothek und Zubehör</td></tr>
+<tr><td><code>plib.sqlite3</code></td><td>Datenbank (Standardort)</td></tr>
+<tr><td><code>backup\</code></td><td>Automatische Sicherungen, neben der Datenbank</td></tr>
+<tr><td><code>plib.ini</code></td><td>Einstellungen</td></tr>
+<tr><td><code>plib.session</code></td><td>Marker für Absturzerkennung; verschwindet beim normalen Beenden</td></tr>
+<tr><td><code>plib_error.log</code></td><td>Fehlerprotokoll</td></tr>
+</table>
+<p>Sichere regelmäßig die Datenbank und den Ordner mit den CAD-Dateien. Bei PostgreSQL sichert der Server die Daten.</p>
+<!-- ===================================================== -->
+<a name="grenzen"></a><h2>17 Grenzen und Ausblick</h2>
+<p>PLIB ist ein Hobbyprojekt mit den wichtigsten Funktionen. Von der Normenreihe ISO 13584 ist folgendes <b>nicht</b> umgesetzt:</p>
+<ul>
+<li>Bereichswerte (min/typisch/max), Listen und Mengen als Datentypen</li>
+<li>Unterscheidung „anwendbare" und „sichtbare" Merkmale, abhängige Merkmale, die „case-of"-Beziehung zwischen Wörterbüchern</li>
+<li>Austausch im Normformat (OntoML, Tabellenschnittstelle, STEP-Austauschdatei)</li>
+<li>Geometrie-Ansichten und parametrische Formprogramme nach den Teilen 31, 101 und 102</li>
+<li>Formale Konformitätsprüfung, Rechteverwaltung und Änderungsprotokoll</li>
+</ul>
+<p>Weitere bekannte Grenzen: mehrere Teile lassen sich nicht auf einmal löschen, Spaltenbreiten werden nicht gemerkt, und ein Mac-Programm gibt es noch nicht. Der Klassenvorschlag zählt Punkte und versteht keine Sprache. Der CAD-Katalog-Download wird beobachtet, nicht selbst ausgelöst; Anmeldung und Format wählst du im Katalog.</p>
+<!-- ===================================================== -->
+<a name="glossar"></a><h2>18 Glossar</h2>
+<table border="1" cellpadding="4" cellspacing="0" width="100%">
+<tr><th align="left" bgcolor="#e8f0fb">Begriff</th><th align="left" bgcolor="#e8f0fb">Erklärung</th></tr>
+<tr><td>3DfindIT / PARTcommunity</td><td>Internet-Kataloge mit 3D-Modellen von Herstellerteilen. PLIB speichert den Link und übernimmt den Download.</td></tr>
+<tr><td>BSU</td><td>Basic Semantic Unit. Eindeutige Kennung eines Wörterbucheintrags aus Lieferant, Code und Version.</td></tr>
+<tr><td>COM-Automatisierung</td><td>Windows-Schnittstelle, über die PLIB Solid Edge fernsteuert.</td></tr>
+<tr><td>ICD</td><td>International Code Designator, vierstellige Kennung einer Registrierungsstelle (ISO/IEC 6523).</td></tr>
+<tr><td>IRDI</td><td>International Registration Data Identifier, genormtes Kennungsformat für Wörterbucheinträge.</td></tr>
+<tr><td>Klassennummer</td><td>Vierstufige Nummer <code>AA.BB.CC.DD</code>, die die Stellung der Klasse im Baum festlegt.</td></tr>
+<tr><td>Klassenvorschlag</td><td>Punktebasierte Empfehlung der Klasse für ein neues Teil.</td></tr>
+<tr><td>Merkmal / Eigenschaft</td><td>Beschreibendes Datenfeld einer Klasse, zum Beispiel Länge.</td></tr>
+<tr><td>PLIB</td><td>Teilebibliothek nach ISO 13584; hier auch der Name dieses Programms.</td></tr>
+<tr><td>Punkte</td><td>Gewichte der Kriterien des Klassenvorschlags (Stammdaten → Punkte für den Klassenvorschlag).</td></tr>
+<tr><td>Suchbegriff</td><td>Wort einer Klasse, an dem der Klassenvorschlag sie erkennt.</td></tr>
+<tr><td>Teilesuche</td><td>Suchfenster für Teile mit Merkmalfiltern (<kbd>Strg</kbd>+<kbd>F</kbd>).</td></tr>
+<tr><td>Vererbung</td><td>Merkmale einer Klasse gelten auch in ihren Unterklassen.</td></tr>
+</table>
+<p><i>PLIB Teilebibliothek · © 2026 Frank Mergl · Bedienungsanleitung, Version 1.0, Stand 29.10.2026. Die Anleitung beschreibt den Funktionsumfang dieses Standes. Abweichungen in späteren Versionen sind möglich.</i></p>
+
+</body></html>

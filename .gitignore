@@ -1,0 +1,39 @@
+# Lazarus / Free Pascal Kompilat
+lib/
+plugins/*/lib/
+*.o
+*.ppu
+*.compiled
+*.a
+*.obj
+*.exe
+*.dbg
+*.bak
+backup/
+
+# Lazarus-Sitzung (offene Tabs, Cursorposition)
+*.lps
+
+# Fertige Auslieferung und alte Stände
+dist/
+_zum_loeschen/
+
+# Windows
+desktop.ini
+Thumbs.db
+
+# Testausgaben
+PLIB_Erweiterung/test_step/*.log
+
+# Persoenliche Einstellungen und Testdaten (nicht veroeffentlichen)
+plib.ini
+plib.sqlite3
+
+# Ausgabe des Installers
+setup/
+
+# Vorbereiteter Update-Ordner zum Kopieren aufs NAS
+PLIB_Update/
+
+# Eigene Solid-Edge-Vorlagen und Protokolle (persoenlich, nicht veroeffentlichen)
+CAD_Basisordner/

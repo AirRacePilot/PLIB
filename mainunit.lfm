@@ -1,0 +1,384 @@
+object MainForm: TMainForm
+  Left = 200
+  Height = 680
+  Top = 100
+  Width = 1100
+  Caption = 'Teilebibliothek (ISO 13584 / PLIB)'
+  ClientHeight = 660
+  ClientWidth = 1100
+  Menu = MainMenu1
+  Position = poScreenCenter
+  object MainMenu1: TMainMenu
+    Left = 24
+    Top = 24
+    object miDatei: TMenuItem
+      Caption = '&Datei'
+      object miMnuDbPath: TMenuItem
+        Caption = 'Datenbank &wechseln / Pfad festlegen ...'
+        OnClick = MnuDbPath
+      end
+      object miMnuPgConnect: TMenuItem
+        Caption = 'Mit &PostgreSQL-Server verbinden ...'
+        OnClick = MnuPgConnect
+      end
+      object miMnuPgImport: TMenuItem
+        Caption = 'Daten aus &SQLite-Datei nach PostgreSQL übernehmen ...'
+        OnClick = MnuPgImport
+      end
+      object miMnuPgExport: TMenuItem
+        Caption = 'PostgreSQL-Daten als SQLite-Datei &exportieren (z. B. für den Mac) ...'
+        OnClick = MnuPgExport
+      end
+      object miSep: TMenuItem
+        Caption = '-'
+      end
+      object miMnuSampleData: TMenuItem
+        Caption = '&Musterdaten einfügen ...'
+        OnClick = MnuSampleData
+      end
+      object miMnuClearDb: TMenuItem
+        Caption = '&Datenbank leeren (Klassen, Merkmale, Teile) ...'
+        OnClick = MnuClearDb
+      end
+      object miMnuImportTree: TMenuItem
+        Caption = 'Klassenbaum aus &Textdatei importieren ...'
+        OnClick = MnuImportTree
+      end
+      object miMnuImportNormparts: TMenuItem
+        Caption = '&Normteile (Schrauben, Muttern ...) importieren ...'
+        OnClick = MnuImportNormparts
+      end
+      object miMnuImportImages: TMenuItem
+        Caption = 'Klassen&bilder aus Ordner importieren ...'
+        OnClick = MnuImportImages
+      end
+      object miMnuBackup: TMenuItem
+        Caption = 'Datenbank &sichern ...'
+        OnClick = MnuBackup
+      end
+      object miMnuCheckDb: TMenuItem
+        Caption = 'Datenbank &prüfen ...'
+        OnClick = MnuCheckDb
+      end
+      object miMnuRestore: TMenuItem
+        Caption = 'Sicherung &wiederherstellen ...'
+        OnClick = MnuRestore
+      end
+      object miMnuOpenBackupDir: TMenuItem
+        Caption = 'Sicherungs&ordner öffnen'
+        OnClick = MnuOpenBackupDir
+      end
+      object miSep2: TMenuItem
+        Caption = '-'
+      end
+      object miMnuQuit: TMenuItem
+        Caption = '&Beenden'
+        OnClick = MnuQuit
+      end
+    end
+    object miSuche: TMenuItem
+      Caption = '&Suche'
+      object miBtnPartSearch: TMenuItem
+        Caption = '&Teilesuche (mit Merkmalfiltern) ...'
+        ShortCut = 16454
+        OnClick = BtnPartSearch
+      end
+      object miBtnSearch: TMenuItem
+        Caption = '&Klassen und Merkmale suchen ...'
+        OnClick = BtnSearch
+      end
+    end
+    object miKlassen: TMenuItem
+      Caption = '&Klassen'
+      object miBtnNewClass: TMenuItem
+        Caption = '&Neue Klasse ...'
+        ShortCut = 16462
+        OnClick = BtnNewClass
+      end
+      object miBtnRenameClass: TMenuItem
+        Caption = 'Klasse &umbenennen ...'
+        ShortCut = 113
+        OnClick = BtnRenameClass
+      end
+      object miBtnClassDesc: TMenuItem
+        Caption = '&Beschreibung / Status ...'
+        ShortCut = 16452
+        OnClick = BtnClassDesc
+      end
+      object miBtnClassTrans: TMenuItem
+        Caption = 'Ü&bersetzung der Klasse ...'
+        OnClick = BtnClassTrans
+      end
+      object miBtnClassImage: TMenuItem
+        Caption = 'Klassen&bild zuordnen ...'
+        OnClick = BtnClassImage
+      end
+      object miBtnClassImageDel: TMenuItem
+        Caption = 'Klassenbild &entfernen'
+        OnClick = BtnClassImageDel
+      end
+      object miBtnClassTerms: TMenuItem
+        Caption = '&Suchbegriffe der Klasse ...'
+        OnClick = BtnClassTerms
+      end
+      object miBtnDelClass: TMenuItem
+        Caption = 'Klasse &löschen ...'
+        OnClick = BtnDelClass
+      end
+    end
+    object miMerkmale: TMenuItem
+      Caption = '&Merkmale'
+      object miBtnManageProps: TMenuItem
+        Caption = 'Merkmale der gewählten Klasse &verwalten ...'
+        ShortCut = 16461
+        OnClick = BtnManageProps
+      end
+      object miBtnCatalog: TMenuItem
+        Caption = '&Merkmalkatalog ...'
+        ShortCut = 16459
+        OnClick = BtnCatalog
+      end
+    end
+    object miTeile: TMenuItem
+      Caption = '&Teile'
+      object miBtnNewPart: TMenuItem
+        Caption = '&Neues Teil ...'
+        ShortCut = 16468
+        OnClick = BtnNewPart
+      end
+      object miBtnEditValues: TMenuItem
+        Caption = '&Werte / Teil bearbeiten ...'
+        ShortCut = 16453
+        OnClick = BtnEditValues
+      end
+      object miBtnDelPart: TMenuItem
+        Caption = 'Teil &löschen ...'
+        OnClick = BtnDelPart
+      end
+      object miBtnOpenCadLink: TMenuItem
+        Caption = '&CAD-Katalog-Link öffnen (3DfindIT / PARTcommunity)'
+        OnClick = BtnOpenCadLink
+      end
+    end
+    object miStammdaten: TMenuItem
+      Caption = '&Stammdaten'
+      object miBtnSuppliers: TMenuItem
+        Caption = '&Lieferanten ...'
+        OnClick = BtnSuppliers
+      end
+      object miMnuDataSources: TMenuItem
+        Caption = '&Datenquellen im Internet (ETIM) ...'
+        OnClick = MnuDataSources
+      end
+      object miBtnUnits: TMenuItem
+        Caption = '&Einheiten ...'
+        OnClick = BtnUnits
+      end
+      object miBtnSuggestWeights: TMenuItem
+        Caption = '&Punkte für den Klassenvorschlag ...'
+        OnClick = BtnSuggestWeights
+      end
+    end
+    object miSolidEdge: TMenuItem
+      Caption = 'Solid &Edge'
+      object miBtnSeOpen: TMenuItem
+        Caption = 'Teil in Solid Edge &öffnen'
+        ShortCut = 16463
+        OnClick = BtnSeOpen
+      end
+      object miBtnSeAssign: TMenuItem
+        Caption = 'CAD-Datei &zuordnen ...'
+        OnClick = BtnSeAssign
+      end
+      object miBtnSeUnassign: TMenuItem
+        Caption = 'CAD-Datei &entfernen'
+        OnClick = BtnSeUnassign
+      end
+      object miBtnSeWriteProps: TMenuItem
+        Caption = 'Eigenschaften &nach Solid Edge schreiben'
+        OnClick = BtnSeWriteProps
+      end
+      object miBtnSeInsert: TMenuItem
+        Caption = 'Teil in &Baugruppe einfügen'
+        OnClick = BtnSeInsert
+      end
+      object miBtnSeFind: TMenuItem
+        Caption = 'Aktuelles &Dokument in PLIB zeigen'
+        ShortCut = 16455
+        OnClick = BtnSeFind
+      end
+      object miSep4: TMenuItem
+        Caption = '-'
+      end
+      object miBtnSeRoot: TMenuItem
+        Caption = '&Basisordner für CAD-Dateien festlegen ...'
+        OnClick = BtnSeRoot
+      end
+      object miBtnSeDlDir: TMenuItem
+        Caption = '&Download-Ordner für CAD-Kataloge festlegen ...'
+        OnClick = BtnSeDlDir
+      end
+      object miBtnSolidEdgeTest: TMenuItem
+        Caption = '&Verbindung testen ...'
+        OnClick = BtnSolidEdgeTest
+      end
+    end
+    object miAnsicht: TMenuItem
+      Caption = '&Ansicht'
+      object miMnuToggleToolbar: TMenuItem
+        Caption = '&Knopfleiste anzeigen'
+        AutoCheck = True
+        Checked = True
+        OnClick = MnuToggleToolbar
+      end
+      object miBereiche: TMenuItem
+        Caption = '&Bereiche'
+        object miPane0: TMenuItem
+          Caption = '&Klassenbaum'
+          AutoCheck = True
+          Checked = True
+          Tag = 0
+          OnClick = MnuTogglePane
+        end
+        object miPane1: TMenuItem
+          Caption = '&Teileliste'
+          AutoCheck = True
+          Checked = True
+          Tag = 1
+          OnClick = MnuTogglePane
+        end
+        object miPane2: TMenuItem
+          Caption = '&Werteliste'
+          AutoCheck = True
+          Checked = True
+          Tag = 2
+          OnClick = MnuTogglePane
+        end
+        object miPane3: TMenuItem
+          Caption = 'Klassen&bild'
+          AutoCheck = True
+          Checked = True
+          Tag = 3
+          OnClick = MnuTogglePane
+        end
+        object miPane4: TMenuItem
+          Caption = '&Bedienungsanleitung'
+          AutoCheck = True
+          Checked = True
+          Tag = 4
+          OnClick = MnuTogglePane
+        end
+      end
+      object miMnuRefresh: TMenuItem
+        Caption = '&Aktualisieren'
+        ShortCut = 116
+        OnClick = MnuRefresh
+      end
+      object miMnuTreeExpand: TMenuItem
+        Caption = 'Klassenbaum &aufklappen'
+        OnClick = MnuTreeExpand
+      end
+      object miMnuTreeCollapse: TMenuItem
+        Caption = 'Klassenbaum &zuklappen'
+        OnClick = MnuTreeCollapse
+      end
+      object miMnuResetLayout: TMenuItem
+        Caption = 'Fenster&aufteilung zurücksetzen'
+        OnClick = MnuResetLayout
+      end
+      object miMnuResetCols: TMenuItem
+        Caption = 'Spalten&reihenfolge zurücksetzen'
+        OnClick = MnuResetCols
+      end
+      object miBtnLang: TMenuItem
+        Caption = '&Datensprache wählen ...'
+        OnClick = BtnLang
+      end
+      object miMnuToggleIrdi: TMenuItem
+        Caption = 'Kennungen als &IRDI anzeigen'
+        AutoCheck = True
+        OnClick = MnuToggleIrdi
+      end
+      object miMnuToggleIds: TMenuItem
+        Caption = 'Kennungen im &Baum anzeigen'
+        AutoCheck = True
+        Checked = True
+        OnClick = MnuToggleIds
+      end
+    end
+    object miHilfe: TMenuItem
+      Caption = '&Hilfe'
+      object miMnuManual: TMenuItem
+        Caption = '&Bedienungsanleitung'
+        ShortCut = 112
+        OnClick = MnuManual
+      end
+      object miMnuManualBrowser: TMenuItem
+        Caption = 'Anleitung im &Browser öffnen'
+        OnClick = MnuManualBrowser
+      end
+      object miMnuHelp: TMenuItem
+        Caption = '&Kurzhilfe ...'
+        OnClick = MnuHelp
+      end
+      object miMnuAbout: TMenuItem
+        Caption = '&Über ...'
+        OnClick = MnuAbout
+      end
+      object miMnuUpdate: TMenuItem
+        Caption = '&Nach Updates suchen ...'
+        OnClick = MnuCheckUpdate
+      end
+      object miMnuShowLog: TMenuItem
+        Caption = '&Fehlerprotokoll anzeigen'
+        OnClick = MnuShowLog
+      end
+    end
+  end
+  object ToolPanel: TFlowPanel
+    Left = 2
+    Height = 4
+    Top = 2
+    Width = 1096
+    Align = alTop
+    AutoSize = True
+    BevelOuter = bvNone
+    BorderSpacing.Around = 2
+    Caption = ''
+    TabOrder = 0
+  end
+  object SBar: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 637
+    Width = 1100
+    Panels = <
+      item
+        Width = 300
+      end
+      item
+        Width = 80
+      end
+      item
+        Width = 200
+      end
+      item
+        Width = 250
+      end
+      item
+        Width = 300
+      end
+    >
+    SimplePanel = False
+  end
+  object Work: TPanel
+    Left = 0
+    Height = 627
+    Top = 8
+    Width = 1100
+    Align = alClient
+    BevelOuter = bvNone
+    Caption = ''
+    TabOrder = 1
+  end
+end
