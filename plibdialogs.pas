@@ -243,8 +243,8 @@ begin
       Total := 0;
       for I := 0 to High(AButtons) do
       begin
-        Bw[I] := Bmp.Canvas.TextWidth(AButtons[I]) + Sc(40);
-        if Bw[I] < Sc(110) then Bw[I] := Sc(110);
+        Bw[I] := Bmp.Canvas.TextWidth(AButtons[I]) + Sc(72);
+        if Bw[I] < Sc(130) then Bw[I] := Sc(130);
         Inc(Total, Bw[I] + Sc(10));
       end;
       W := Sc(640);

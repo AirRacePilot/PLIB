@@ -7350,7 +7350,7 @@ begin
   if not AInfo.Available then
   begin
     if AManual then
-      ShowMessage('PLIB ist auf dem neuesten Stand (Version ' + AppVersion + ').');
+      InfoText('Update-Prüfung', 'PLIB ist auf dem neuesten Stand (Version ' + AppVersion + ').');
     Exit;
   end;
   if (not AManual) and SameText(Skipped, AInfo.Version) then Exit;
